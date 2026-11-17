@@ -50,7 +50,7 @@ body[data-phase="lost"] #enemy-panel{order:-1}
 .cell:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px #00101f66}
 .cell:active:not(:disabled){transform:scale(.96)}
 .cell.ship .ship-art{transition:filter var(--motion-normal) var(--ease-standard),transform var(--motion-medium) var(--ease-standard)}
-.cell.ship{animation:ship-arrive 220ms var(--ease-enter) both}
+
 .cell.impact-hit{animation:impact-hit var(--motion-combat) var(--ease-out, ease-out) both;z-index:1}
 .cell.impact-miss{animation:impact-miss var(--motion-combat) var(--ease-standard) both}
 .cell.ship-sunk{animation:ship-sink var(--motion-event) var(--ease-standard) both}
