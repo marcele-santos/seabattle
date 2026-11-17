@@ -10,6 +10,20 @@ export function placePlayerShip(game,row,col,orientation) {
  const id=`player-ship-${game.nextShip}`; if(!placeShip(game.playerBoard,row,col,length,orientation,id))return {ok:false,reason:"invalid"};
  game.playerShips.push({id,length,hits:0});game.nextShip++;return {ok:true,complete:game.nextShip===FLEET.length};
 }
+export function autoPlacePlayerFleet(game,random=Math.random){
+ if(game.phase!=="setup")return false;
+ game.playerBoard=createBoard();game.playerShips=[];game.nextShip=0;
+ for(const length of FLEET){
+  let placed=false;
+  for(let attempt=0;attempt<1000&&!placed;attempt++){
+   const orientation=random()<.5?"horizontal":"vertical";
+   const row=Math.floor(random()*BOARD_SIZE),col=Math.floor(random()*BOARD_SIZE);
+   placed=placePlayerShip(game,row,col,orientation).ok;
+  }
+  if(!placed)throw new Error("Não foi possível posicionar a frota automaticamente.");
+ }
+ return true;
+}
 export function startGame(game){if(game.phase!=="setup"||game.nextShip!==FLEET.length)return false;game.phase="playing";return true;}
 function record(game,side,row,col,result){game.history.unshift({side,row,col,hit:result.hit,star:Boolean(result.star),shipDestroyed:Boolean(result.shipDestroyed),turn:game.history.length+1});}
 export function playerAttack(game,row,col){
