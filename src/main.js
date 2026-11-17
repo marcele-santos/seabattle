@@ -1,4 +1,4 @@
-import {createGame,placePlayerShip,startGame,playerAttack,computerAttack} from "./game-state.js";
+import {createGame,placePlayerShip,autoPlacePlayerFleet,startGame,playerAttack,computerAttack} from "./game-state.js";
 import {initTelegramWebApp} from "./telegram-webapp.js";
 import {render} from "./ui.js";
 import {loadStats,saveResult} from "./stats.js";
@@ -55,6 +55,7 @@ async function attack(row,col){
  resolving=false;finish();refresh();
 }
 $("action-button").addEventListener("click",()=>{if(game.phase==="setup"){if(!startGame(game))return;message("Batalha iniciada. Escolha uma casa no campo inimigo.");}else if(game.phase==="won"||game.phase==="lost"){game=createGame(Math.random,$("difficulty").value);resultSaved=false;message("Nova partida. Posicione sua frota.");}else return;refresh();});
+$("auto-place-button").addEventListener("click",()=>{if(!autoPlacePlayerFleet(game))return;message("Frota posicionada automaticamente. Você pode iniciar a batalha.");refresh();});
 $("reset-button").addEventListener("click",()=>{game=createGame(Math.random,$("difficulty").value);resultSaved=false;resolving=false;message("Partida reiniciada. Posicione sua frota.");refresh();});
 $("orientation").addEventListener("change",()=>message(`Orientação: ${$("orientation").value==="horizontal"?"horizontal":"vertical"}.`));
 $("difficulty").addEventListener("change",()=>{game.difficulty=$("difficulty").value;message("Dificuldade definida para a próxima batalha.");refresh();});
