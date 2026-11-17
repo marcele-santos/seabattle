@@ -76,3 +76,31 @@ test("posicionamento automático cria frota válida e inicia a batalha",async({p
  await page.screenshot({path:"test-results/mobile-battle.png",fullPage:true});
  await expect(page.locator("#enemy-board .cell").first()).toBeEnabled();
 });
+
+
+test("navio múltiplo só aparece destruído depois do último acerto",async({page})=>{
+ await page.goto("/");
+ const result=await page.evaluate(async()=>{
+  const state=await import("/src/game-state.js");
+  const ui=await import("/src/ui.js");
+  const game=state.createGame(Math.random);
+  for(const [row,col] of [[0,0],[2,0],[4,0],[6,0],[7,4]])state.placePlayerShip(game,row,col,"horizontal");
+  state.startGame(game);
+  const stats={games:0,wins:0,bestScore:0,shots:0,hits:0};
+  const handlers={place(){},attack(){},isBusy:false};
+  const ship=game.enemyShips.find(item=>item.length===3);
+  const cells=[];
+  for(let row=0;row<8;row++)for(let col=0;col<8;col++)if(game.enemyBoard[row][col]===ship.id)cells.push([row,col]);
+  state.playerAttack(game,cells[0][0],cells[0][1]);
+  ui.render(game,handlers,stats);
+  const partial={sunk:document.querySelectorAll("#enemy-board .fleet-vessel.sunk").length,hitCells:document.querySelectorAll("#enemy-board .cell.ship-sunk").length};
+  for(const [row,col] of cells.slice(1))state.playerAttack(game,row,col);
+  ui.render(game,handlers,stats);
+  return {partial,sunk:document.querySelectorAll("#enemy-board .fleet-vessel.sunk").length,blast:document.querySelectorAll("#enemy-board .fleet-blast").length,fracture:document.querySelectorAll("#enemy-board .fleet-fracture").length};
+ });
+ expect(result.partial.sunk).toBe(0);
+ expect(result.partial.hitCells).toBe(0);
+ expect(result.sunk).toBe(1);
+ expect(result.blast).toBe(1);
+ expect(result.fracture).toBe(1);
+});
