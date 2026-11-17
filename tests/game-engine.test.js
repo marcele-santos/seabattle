@@ -51,7 +51,7 @@ test("computador ataca uma casa ainda não atingida", () => {
   startGame(game);
   const result = computerAttack(game);
   assert.equal(result.ok, true);
-  assert.equal(game.enemyShots.size, 1);
+  assert.equal(game.playerShots.size, 1);
 });
 
 test("ataque do jogador é aceito somente durante a batalha", () => {
