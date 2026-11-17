@@ -4,8 +4,13 @@ test("posiciona frota, inicia batalha e registra ataques",async({page})=>{
  await page.goto("/");
  await expect(page).toHaveTitle("Batalha Naval");
  await expect(page.locator("#enemy-panel")).toBeHidden();
- for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();
+ await page.locator("#player-board .cell").nth(0).click();
+ await page.locator("#orientation").selectOption("vertical");
+ await page.locator("#player-board .cell").nth(16).click();
+ await page.locator("#orientation").selectOption("horizontal");
+ for(const i of [32,48,58])await page.locator("#player-board .cell").nth(i).click();
  await expect(page.locator("#fleet-status .fleet-item.done")).toHaveCount(5);
+ await expect(page.locator("#player-board .fleet-vessel[transform^='rotate(90)']")).toHaveCount(1);
  await page.screenshot({path:"test-results/desktop-setup.png",fullPage:true});
  await page.locator("#action-button").click();
  await expect(page.locator("#phase-label")).toHaveText("Batalha em andamento");
@@ -19,6 +24,6 @@ test("posiciona frota, inicia batalha e registra ataques",async({page})=>{
  await expect(page.locator("#history-list li").first()).toContainText(/Você|Computador/);
 });
 test("reiniciar retorna à preparação",async({page})=>{await page.goto("/");await page.locator("#player-board .cell").first().click();await page.locator("#reset-button").click();await expect(page.locator("#phase-label")).toHaveText("Preparação");await expect(page.locator("#player-board .cell.ship-cell")).toHaveCount(0);});
-test("layout funciona em tela estreita",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/");const cols=await page.locator(".game-layout").evaluate(e=>getComputedStyle(e).gridTemplateColumns);expect(cols.trim().split(" ").filter(Boolean)).toHaveLength(1);expect(await page.locator("body").evaluate(e=>e.scrollWidth)).toBeLessThanOrEqual(390);expect(await page.locator(".board").first().evaluate(e=>getComputedStyle(e).gap)).toBe("0px");for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();await page.screenshot({path:"test-results/mobile-setup.png",fullPage:true});});
+test("layout funciona em tela estreita",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/");const cols=await page.locator(".game-layout").evaluate(e=>getComputedStyle(e).gridTemplateColumns);expect(cols.trim().split(" ").filter(Boolean)).toHaveLength(1);expect(await page.locator("body").evaluate(e=>e.scrollWidth)).toBeLessThanOrEqual(390);expect(await page.locator(".board").first().evaluate(e=>getComputedStyle(e).gap)).toBe("0px");expect(await page.locator(".topbar h1").evaluate(e=>getComputedStyle(e).whiteSpace)).toBe("nowrap");for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();await expect(page.locator("#control-help")).toHaveText("Frota completa. Inicie a batalha.");await page.screenshot({path:"test-results/mobile-setup.png",fullPage:true});});
 test("dificuldade fica bloqueada após início",async({page})=>{await page.goto("/");await page.locator("#difficulty").selectOption("hard");for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();await page.locator("#action-button").click();await expect(page.locator("#difficulty")).toBeDisabled();});
 test("estatísticas locais são recuperadas ao recarregar",async({page})=>{await page.goto("/");await page.evaluate(()=>localStorage.setItem("seabattle.stats.v1",JSON.stringify({games:3,wins:2,losses:1,bestScore:900,totalScore:1800,shots:20,hits:10})));await page.reload();await expect(page.locator("#stats-games")).toHaveText("3");await expect(page.locator("#stats-wins")).toHaveText("2");await expect(page.locator("#stats-accuracy")).toHaveText("50%");});
