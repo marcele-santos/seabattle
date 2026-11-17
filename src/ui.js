@@ -21,7 +21,7 @@ export function render(game,handlers,stats){
  $("orientation").disabled=!setup;$("difficulty").disabled=!setup;$("action-button").disabled=(setup&&game.nextShip!==FLEET.length)||game.phase==="playing";
  $("action-button").textContent=setup?"Começar batalha":finished?"Jogar novamente":"Ataque pelo tabuleiro";
  $("control-title").textContent=setup?`Posicione: ${names[game.nextShip]||"frota completa"}`:"Comandos de batalha";
- $("control-help").textContent=setup?`Navio de ${FLEET[game.nextShip]??"—"} casa(s). Clique em uma casa vazia.`:`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
+ $("control-help").textContent=setup?(game.nextShip===FLEET.length?"Frota completa. Inicie a batalha.":`Navio de ${FLEET[game.nextShip]} casa(s). Clique em uma casa vazia.`):`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
  $("score-value").textContent=game.score;$("history-list").replaceChildren();
  if(!game.history.length){const li=document.createElement("li");li.textContent="Os ataques aparecerão aqui.";$("history-list").append(li);}
  game.history.slice(0,12).forEach(x=>{const li=document.createElement("li"),who=x.side==="player"?"Você":"Computador",out=x.hit?(x.shipDestroyed?"destruiu um navio":"acertou"):x.star?"encontrou uma estrela":"atingiu água";li.textContent=`${who}: linha ${x.row+1}, coluna ${x.col+1} — ${out}`;$("history-list").append(li);});
