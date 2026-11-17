@@ -125,7 +125,13 @@ function draw(id,board,game,setup,enemy,handlers,animation){
     const splinters=document.createElementNS(svg.namespaceURI,"path");
     splinters.setAttribute("class","fleet-splinters");
     splinters.setAttribute("d",`M ${cabinCenter-22} ${cy-25} l -15 -13 5 18 M ${cabinCenter+17} ${cy+23} l 18 13 -7 -19 M ${x1-20} ${cy-5} l 17 -11 -8 17`);
-    wreck.append(breakLine,scorch,damage,splinters);group.append(wreck);
+    const blast=document.createElementNS(svg.namespaceURI,"path");
+    blast.setAttribute("class","fleet-blast");
+    blast.setAttribute("d",`M ${centerX-15} ${cy-10} l 8 -7 5 8 10 -5 -3 11 9 5 -12 4 -3 10 -7 -9 -11 2 5 -11 -8 -7 Z`);
+    const fracture=document.createElementNS(svg.namespaceURI,"path");
+    fracture.setAttribute("class","fleet-fracture");
+    fracture.setAttribute("d",`M ${centerX-28} ${cy-23} l 11 12 -8 8 13 7 -7 18 M ${centerX+28} ${cy-23} l -10 11 8 8 -13 7 7 18`);
+    wreck.append(breakLine,scorch,damage,splinters,blast,fracture);group.append(wreck);
    }
    svg.append(group);
   }
