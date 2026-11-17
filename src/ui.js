@@ -29,13 +29,26 @@ export function render(game,handlers,stats){
 }
 function draw(id,board,game,setup,enemy,handlers,animation){
  const root=$(id);root.replaceChildren();
+ const ships=enemy?game.enemyShips:game.playerShips;
+ const sunkIds=new Set(ships.filter(ship=>ship.hits>=ship.length).map(ship=>ship.id));
  const event=animation, sunkId=event?.shipDestroyed?board[event.row]?.[event.col]:null;
+ const isVisible=(shipId,shot)=>!enemy||sunkIds.has(shipId)||shot;
  for(let r=0;r<BOARD_SIZE;r++)for(let c=0;c<BOARD_SIZE;c++){
-  const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
-  if(board[r][c]&&!enemy){cell.classList.add("ship");const horizontal=Boolean(board[r][c-1]||board[r][c+1]),vertical=Boolean(board[r-1]?.[c]||board[r+1]?.[c]);const axis=horizontal?"horizontal":vertical?"vertical":"single";const before=horizontal?Boolean(board[r][c-1]):vertical?Boolean(board[r-1]?.[c]):false;const after=horizontal?Boolean(board[r][c+1]):vertical?Boolean(board[r+1]?.[c]):false;cell.dataset.axis=axis;cell.dataset.segment=before?(after?"middle":"end"):(after?"start":"single");cell.innerHTML='<svg class="ship-art" viewBox="0 0 100 100" aria-hidden="true"><path class="ship-hull" d="M 8 43 L 92 43 L 78 70 Q 50 83 22 70 Z"/><path class="ship-deck" d="M 24 39 L 76 39 M 35 51 L 65 51"/><path class="ship-cabin" d="M 39 26 L 61 26 L 67 43 L 33 43 Z"/></svg>';cell.setAttribute("aria-label",`Navio — linha ${r+1}, coluna ${c+1}`);}
-  if(shot)cell.classList.add(board[r][c]?"hit":"miss");
+  const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),shipId=board[r][c],cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
+  if(shipId&&isVisible(shipId,shot)){
+   cell.classList.add("ship");
+   const horizontal=Boolean(board[r][c-1]===shipId||board[r][c+1]===shipId),vertical=Boolean(board[r-1]?.[c]===shipId||board[r+1]?.[c]===shipId);
+   const axis=horizontal?"horizontal":vertical?"vertical":"single";
+   const before=horizontal?board[r][c-1]===shipId:vertical?board[r-1]?.[c]===shipId:false;
+   const after=horizontal?board[r][c+1]===shipId:vertical?board[r+1]?.[c]===shipId:false;
+   cell.dataset.axis=axis;cell.dataset.segment=before?(after?"middle":"end"):(after?"start":"single");
+   cell.innerHTML='<svg class="ship-art" viewBox="0 0 100 100" aria-hidden="true"><path class="ship-hull" d="M 4 38 L 96 38 L 96 66 Q 50 88 4 66 Z"/><path class="ship-deck" d="M 18 45 L 82 45 M 30 56 L 70 56"/><path class="ship-cabin" d="M 39 25 L 61 25 L 68 43 L 32 43 Z"/></svg>';
+   cell.setAttribute("aria-label",`${sunkIds.has(shipId)?"Navio afundado":shot?"Navio atingido":"Navio"} — linha ${r+1}, coluna ${c+1}`);
+  }
+  if(shot)cell.classList.add(shipId?"hit":"miss");
   if(event&&event.row===r&&event.col===c)cell.classList.add(event.hit?"impact-hit":"impact-miss");
-  if(sunkId&&board[r][c]===sunkId)cell.classList.add("ship-sunk");
+  if(shipId&&sunkIds.has(shipId))cell.classList.add("ship-sunk");
+  if(sunkId&&shipId===sunkId)cell.classList.add("ship-sunk","sink-event");
   cell.disabled=enemy?(game.phase!=="playing"||shot||handlers.isBusy):!setup;
   if(setup&&!enemy)cell.addEventListener("click",()=>handlers.place(r,c));
   if(enemy&&game.phase==="playing")cell.addEventListener("click",()=>handlers.attack(r,c));
