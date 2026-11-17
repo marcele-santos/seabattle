@@ -106,10 +106,18 @@ function draw(id,board,game,setup,enemy,handlers,animation){
    bow.setAttribute("d",`M ${x1-22} ${cy-7} L ${x1-8} ${cy} L ${x1-22} ${cy+7}`);
    group.append(bow);
    if(sunkIds.has(ship.id)){
+    const wreck=document.createElementNS(svg.namespaceURI,"g");
+    wreck.setAttribute("class","fleet-wreck");
+    const breakLine=document.createElementNS(svg.namespaceURI,"path");
+    breakLine.setAttribute("class","fleet-break");
+    breakLine.setAttribute("d",`M ${cabinCenter-5} ${cy-24} l -9 12 12 7 -10 12 13 17`);
+    const scorch=document.createElementNS(svg.namespaceURI,"path");
+    scorch.setAttribute("class","fleet-scorch");
+    scorch.setAttribute("d",`M ${x0+28} ${cy-10} q 10 -13 20 0 t 20 0 M ${cabinCenter+13} ${cy+10} q 12 -12 23 0 t 19 0`);
     const damage=document.createElementNS(svg.namespaceURI,"path");
     damage.setAttribute("class","fleet-damage");
-    damage.setAttribute("d",`M ${cabinCenter-10} ${cy-8} l 20 16 m -20 0 l 20 -16`);
-    group.append(damage);
+    damage.setAttribute("d",`M ${cabinCenter-13} ${cy-17} l 8 12 -12 9 14 9 M ${x1-48} ${cy-15} l -8 11 10 8 -7 12`);
+    wreck.append(breakLine,scorch,damage);group.append(wreck);
    }
    svg.append(group);
   }
