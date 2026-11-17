@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071b33">
+  <meta name="description" content="Batalha Naval — jogo de estratégia por turnos.">
+  <title>Batalha Naval</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">JOGO DE ESTRATÉGIA</p>
+        <h1>Batalha Naval</h1>
+      </div>
+      <div class="top-actions"><span class="status-pill" id="phase-label">Preparação</span></div>
+    </header>
+
+    <section class="intro panel">
+      <div><h2 id="screen-title">Posicione sua frota</h2><p id="screen-description">Escolha a orientação e selecione as casas do seu navio.</p></div>
+      <div class="fleet" id="fleet-status" aria-label="Frota"></div>
+    </section>
+
+    <section class="game-layout">
+      <section class="board-panel panel">
+        <div class="board-heading"><div><p class="eyebrow">SEU CAMPO</p><h2 id="player-board-title">Sua frota</h2></div><span class="board-caption" id="player-caption">Posicionamento</span></div>
+        <div class="board-wrap"><div id="player-board" class="board" aria-label="Seu tabuleiro"></div></div>
+      </section>
+      <section class="board-panel panel enemy-panel">
+        <div class="board-heading"><div><p class="eyebrow">CAMPO INIMIGO</p><h2 id="enemy-board-title">Alvo</h2></div><span class="board-caption" id="enemy-caption">Aguardando</span></div>
+        <div class="board-wrap"><div id="enemy-board" class="board enemy-board" aria-label="Tabuleiro inimigo"></div></div>
+      </section>
+    </section>
+
+    <section class="controls panel" id="controls">
+      <div class="control-copy"><p class="eyebrow">COMANDO</p><h2 id="control-title">Posicione os navios</h2><p id="control-help">Clique em uma casa vazia para posicionar o navio selecionado.</p></div>
+      <div class="control-actions">
+        <label class="select-label" for="orientation">Orientação</label>
+        <select id="orientation"><option value="horizontal">Horizontal</option><option value="vertical">Vertical</option></select>
+        <button class="button button-primary" id="action-button" type="button">Começar batalha</button>
+        <button class="button button-quiet" id="reset-button" type="button">Reiniciar</button>
+      </div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="legend panel">
+      <div><span class="legend-dot water"></span> Água</div><div><span class="legend-dot ship"></span> Seu navio</div><div><span class="legend-dot hit"></span> Acerto</div><div><span class="legend-dot miss"></span> Água atingida</div><div><span class="legend-star">★</span> Estrela bônus</div>
+    </section>
+    <footer><span>BATALHA NAVAL</span><span>MVP · versão 0.1.0</span></footer>
+  </main>
+</body>
+</html>
