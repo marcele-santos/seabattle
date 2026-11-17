@@ -36,7 +36,7 @@ test("água e estrela têm feedback visual distinto e som pode ser desligado",as
  const result=await page.evaluate(async()=>{
   const state=await import("/src/game-state.js");
   const ui=await import("/src/ui.js");
-  const game=state.createGame(()=>0.37);
+  const game=state.createGame(Math.random);
   for(const [row,col,orientation] of [[0,0,"horizontal"],[2,0,"horizontal"],[4,0,"horizontal"],[6,0,"horizontal"],[7,4,"horizontal"]])state.placePlayerShip(game,row,col,orientation);
   state.startGame(game);
   const stats={games:0,wins:0,bestScore:0,shots:0,hits:0};
