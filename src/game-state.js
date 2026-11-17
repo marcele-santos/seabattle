@@ -48,7 +48,7 @@ export function playerAttack(game, row, col) {
 export function computerAttack(game) {
   if (game.phase !== "playing") return { ok: false, reason: "phase" };
   const available = [];
-  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (!game.enemyShots.has(r * 8 + c)) available.push([r, c]);
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (!game.playerShots.has(r * 8 + c)) available.push([r, c]);
   if (!available.length) return { ok: false, reason: "exhausted" };
   const [row, col] = available[Math.floor(game.random() * available.length)];
   const result = resolveAttack(game, row, col, "player");
