@@ -14,7 +14,7 @@ export function render(game,handlers,stats){
  $("orientation").disabled=!setup;$("difficulty").disabled=!setup;$("action-button").disabled=(setup&&game.nextShip!==FLEET.length)||game.phase==="playing";
  $("action-button").textContent=setup?"Começar batalha":finished?"Jogar novamente":"Ataque pelo tabuleiro";
  $("control-title").textContent=setup?`Posicione: ${names[game.nextShip]||"frota completa"}`:"Comandos de batalha";
- $("control-help").textContent=setup?`Navio de ${FLEET[game.nextShip]??"—"} casa(s). Clique em uma casa vazia.`:`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas: ${game.stars}.`;
+ $("control-help").textContent=setup?`Navio de ${FLEET[game.nextShip]??"—"} casa(s). Clique em uma casa vazia.`:`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
  $("score-value").textContent=game.score;$("history-list").replaceChildren();
  if(!game.history.length){const li=document.createElement("li");li.textContent="Os ataques aparecerão aqui.";$("history-list").append(li);}
  game.history.slice(0,12).forEach(x=>{const li=document.createElement("li"),who=x.side==="player"?"Você":"Computador",out=x.hit?(x.shipDestroyed?"destruiu um navio":"acertou"):x.star?"encontrou uma estrela":"atingiu água";li.textContent=`${who}: linha ${x.row+1}, coluna ${x.col+1} — ${out}`;$("history-list").append(li);});
@@ -24,7 +24,7 @@ function draw(id,board,game,setup,enemy,handlers){
  const root=$(id);root.replaceChildren();
  for(let r=0;r<BOARD_SIZE;r++)for(let c=0;c<BOARD_SIZE;c++){
   const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
-  if(board[r][c]&&!enemy)cell.classList.add("ship");if(shot)cell.classList.add(board[r][c]?"hit":"miss");if(enemy&&game.starCells.has(key)&&!shot&&game.phase!=="setup")cell.classList.add("star");
+  if(board[r][c]&&!enemy)cell.classList.add("ship");if(shot)cell.classList.add(board[r][c]?"hit":"miss");
   cell.disabled=enemy?(game.phase!=="playing"||shot):!setup;if(setup&&!enemy)cell.addEventListener("click",()=>handlers.place(r,c));if(enemy&&game.phase==="playing")cell.addEventListener("click",()=>handlers.attack(r,c));root.append(cell);
  }
 }
