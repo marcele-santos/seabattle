@@ -71,6 +71,7 @@ test("posicionamento automático cria frota válida e inicia a batalha",async({p
  await page.locator("#action-button").click();
  await expect(page.locator("#phase-label")).toHaveText("Batalha em andamento");
  await expect(page.locator("#auto-place-button")).toBeHidden();
+ await expect(page.locator("#action-button")).toBeHidden();
  await expect(page.locator("#enemy-board .cell")).toHaveCount(64);
  await page.screenshot({path:"test-results/mobile-battle.png",fullPage:true});
  await expect(page.locator("#enemy-board .cell").first()).toBeEnabled();
