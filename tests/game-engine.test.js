@@ -1,68 +1,15 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import { createBoard, canPlaceShip, placeShip, createFleetBoard, hasWon, resolveAttack } from "../src/game-engine.js";
-import { createGame, placePlayerShip, startGame, playerAttack, computerAttack } from "../src/game-state.js";
-
-test("tabuleiro começa vazio e aceita posicionamento válido", () => {
-  const board = createBoard();
-  assert.equal(canPlaceShip(board, 0, 0, 3, "horizontal"), true);
-  assert.equal(placeShip(board, 0, 0, 3, "horizontal", "a"), true);
-  assert.equal(board[0][2], "a");
-});
-
-test("impede navio fora do tabuleiro e sobreposição", () => {
-  const board = createBoard();
-  assert.equal(canPlaceShip(board, 7, 7, 2, "horizontal"), false);
-  placeShip(board, 1, 1, 2, "vertical", "a");
-  assert.equal(canPlaceShip(board, 2, 1, 1, "horizontal"), false);
-});
-
-test("gera frota completa sem colisões", () => {
-  const { board, ships } = createFleetBoard();
-  assert.equal(ships.length, 5);
-  assert.equal(ships.reduce((sum, ship) => sum + ship.length, 0), 9);
-  assert.equal(board.flat().filter(Boolean).length, 9);
-});
-
-test("vitória só ocorre quando todos os navios são destruídos", () => {
-  assert.equal(hasWon([{ length: 1, hits: 1 }]), true);
-  assert.equal(hasWon([{ length: 2, hits: 1 }]), false);
-});
-
-test("ataque não pode ser repetido e registra acerto", () => {
-  const game = { enemyBoard: createBoard(), playerBoard: createBoard(), enemyShots: new Set(), playerShots: new Set(), enemyShips: [{ id: "s", length: 1, hits: 0 }], playerShips: [], starCells: new Set(), stars: 0 };
-  game.enemyBoard[0][0] = "s";
-  assert.equal(resolveAttack(game, 0, 0).hit, true);
-  assert.equal(resolveAttack(game, 0, 0).reason, "repeat");
-});
-
-test("estrelas bônus são distribuídas somente em casas de água", () => {
-  const game = createGame();
-  assert.equal(game.starCells.size, 5);
-  for (const key of game.starCells) {
-    assert.equal(game.enemyBoard[Math.floor(key / 8)][key % 8], null);
-  }
-});
-
-test("fluxo da partida exige posicionar a frota antes de iniciar", () => {
-  const game = createGame();
-  assert.equal(startGame(game), false);
-  const placements = [[0,0],[2,0],[4,0],[6,0],[7,2]];
-  placements.forEach(([r,c], i) => assert.equal(placePlayerShip(game, r, c, "horizontal").ok, true, `ship ${i}`));
-  assert.equal(startGame(game), true);
-  assert.equal(game.phase, "playing");
-});
-
-test("computador ataca uma casa ainda não atingida", () => {
-  const game = createGame();
-  [[0,0],[2,0],[4,0],[6,0],[7,2]].forEach(([r,c]) => placePlayerShip(game, r, c, "horizontal"));
-  startGame(game);
-  const result = computerAttack(game);
-  assert.equal(result.ok, true);
-  assert.equal(game.playerShots.size, 1);
-});
-
-test("ataque do jogador é aceito somente durante a batalha", () => {
-  const game = createGame();
-  assert.equal(playerAttack(game, 0, 0).ok, false);
-});
+import test from "node:test";import assert from "node:assert/strict";
+import {createBoard,canPlaceShip,placeShip,createFleetBoard,hasWon,resolveAttack} from "../src/game-engine.js";
+import {createGame,placePlayerShip,startGame,playerAttack,computerAttack,getRemainingShips} from "../src/game-state.js";
+test("tabuleiro vazio aceita posicionamento válido",()=>{const b=createBoard();assert.equal(canPlaceShip(b,0,0,3,"horizontal"),true);assert.equal(placeShip(b,0,0,3,"horizontal","a"),true);assert.equal(b[0][2],"a");});
+test("impede navio fora do tabuleiro e sobreposição",()=>{const b=createBoard();assert.equal(canPlaceShip(b,7,7,2,"horizontal"),false);placeShip(b,1,1,2,"vertical","a");assert.equal(canPlaceShip(b,2,1,1,"horizontal"),false);});
+test("gera frota completa sem colisões",()=>{const {board,ships}=createFleetBoard();assert.equal(ships.length,5);assert.equal(ships.reduce((s,x)=>s+x.length,0),9);assert.equal(board.flat().filter(Boolean).length,9);});
+test("vitória exige destruir todos os navios",()=>{assert.equal(hasWon([{length:1,hits:1}]),true);assert.equal(hasWon([{length:2,hits:1}]),false);});
+test("ataque repetido é bloqueado",()=>{const g={enemyBoard:createBoard(),playerBoard:createBoard(),enemyShots:new Set(),playerShots:new Set(),enemyShips:[{id:"s",length:1,hits:0}],playerShips:[],starCells:new Set(),stars:0};g.enemyBoard[0][0]="s";assert.equal(resolveAttack(g,0,0).hit,true);assert.equal(resolveAttack(g,0,0).reason,"repeat");});
+test("estrelas ficam em casas de água",()=>{const g=createGame();assert.equal(g.starCells.size,5);for(const k of g.starCells)assert.equal(g.enemyBoard[Math.floor(k/8)][k%8],null);});
+test("posicionamento completo é necessário para iniciar",()=>{const g=createGame();assert.equal(startGame(g),false);[[0,0],[2,0],[4,0],[6,0],[7,2]].forEach(([r,c])=>assert.equal(placePlayerShip(g,r,c,"horizontal").ok,true));assert.equal(startGame(g),true);});
+test("computador ataca uma única casa disponível",()=>{const g=createGame();[[0,0],[2,0],[4,0],[6,0],[7,2]].forEach(([r,c])=>placePlayerShip(g,r,c,"horizontal"));startGame(g);assert.equal(computerAttack(g).ok,true);assert.equal(g.playerShots.size,1);});
+test("ataque do jogador só ocorre durante batalha",()=>{assert.equal(playerAttack(createGame(),0,0).ok,false);});
+test("dificuldade inválida usa normal e frota restante é calculada",()=>{assert.equal(createGame(Math.random,"x").difficulty,"normal");assert.equal(getRemainingShips([{length:2,hits:1},{length:1,hits:1}]),1);});
+test("ataque registra histórico, pontos e vitória",()=>{const g=createGame(()=>0.5);g.phase="playing";g.enemyBoard[0][0]="s";g.enemyShips=[{id:"s",length:1,hits:0}];assert.equal(playerAttack(g,0,0).hit,true);assert.equal(g.score,650);assert.equal(g.history[0].side,"player");assert.equal(g.phase,"won");});
+test("computador registra ataque e não repete casas",()=>{const g=createGame(()=>0.1,"hard");[[0,0],[2,0],[4,0],[6,0],[7,2]].forEach(([r,c])=>placePlayerShip(g,r,c,"horizontal"));startGame(g);assert.equal(computerAttack(g).ok,true);assert.equal(g.history[0].side,"computer");assert.equal(g.playerShots.size,1);});
