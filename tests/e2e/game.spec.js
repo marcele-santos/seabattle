@@ -30,3 +30,33 @@ test("reiniciar retorna à preparação",async({page})=>{await page.goto("/");aw
 test("layout funciona em tela estreita",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/");const cols=await page.locator(".game-layout").evaluate(e=>getComputedStyle(e).gridTemplateColumns);expect(cols.trim().split(" ").filter(Boolean)).toHaveLength(1);expect(await page.locator("body").evaluate(e=>e.scrollWidth)).toBeLessThanOrEqual(390);expect(await page.locator(".board").first().evaluate(e=>getComputedStyle(e).gap)).toBe("0px");expect(await page.locator(".topbar h1").evaluate(e=>getComputedStyle(e).whiteSpace)).toBe("nowrap");for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();await expect(page.locator("#control-help")).toHaveText("Frota completa. Inicie a batalha.");await page.screenshot({path:"test-results/mobile-setup.png",fullPage:true});});
 test("dificuldade fica bloqueada após início",async({page})=>{await page.goto("/");await page.locator("#difficulty").selectOption("hard");for(const i of [0,16,32,48,58])await page.locator("#player-board .cell").nth(i).click();await page.locator("#action-button").click();await expect(page.locator("#difficulty")).toBeDisabled();});
 test("estatísticas locais são recuperadas ao recarregar",async({page})=>{await page.goto("/");await page.evaluate(()=>localStorage.setItem("seabattle.stats.v1",JSON.stringify({games:3,wins:2,losses:1,bestScore:900,totalScore:1800,shots:20,hits:10})));await page.reload();await expect(page.locator("#stats-games")).toHaveText("3");await expect(page.locator("#stats-wins")).toHaveText("2");await expect(page.locator("#stats-accuracy")).toHaveText("50%");});
+
+test("água e estrela têm feedback visual distinto e som pode ser desligado",async({page})=>{
+ await page.goto("/");
+ const result=await page.evaluate(async()=>{
+  const state=await import("/src/game-state.js");
+  const ui=await import("/src/ui.js");
+  const game=state.createGame(()=>0.37);
+  for(const [row,col,orientation] of [[0,0,"horizontal"],[2,0,"horizontal"],[4,0,"horizontal"],[6,0,"horizontal"],[7,4,"horizontal"]])state.placePlayerShip(game,row,col,orientation);
+  state.startGame(game);
+  const stats={games:0,wins:0,bestScore:0,shots:0,hits:0};
+  const handlers={place(){},attack(){},isBusy:false};
+  let water=-1;
+  for(let key=0;key<64;key++)if(game.enemyBoard[Math.floor(key/8)][key%8]===null&&!game.starCells.has(key)){water=key;break;}
+  state.playerAttack(game,Math.floor(water/8),water%8);
+  ui.render(game,handlers,stats);
+  const waterClass=document.querySelectorAll("#enemy-board .cell")[water].className;
+  const star=[...game.starCells][0];
+  state.playerAttack(game,Math.floor(star/8),star%8);
+  ui.render(game,handlers,stats);
+  const starClass=document.querySelectorAll("#enemy-board .cell")[star].className;
+  return {waterClass,starClass};
+ });
+ expect(result.waterClass).toContain("impact-miss");
+ expect(result.waterClass).not.toContain("impact-star");
+ expect(result.starClass).toContain("impact-star");
+ expect(await page.locator("#sound-toggle").getAttribute("aria-pressed")).toBe("true");
+ await page.locator("#sound-toggle").click();
+ await expect(page.locator("#sound-toggle")).toHaveAttribute("aria-pressed","false");
+ await expect(page.locator("#sound-toggle")).toContainText("desligado");
+});
