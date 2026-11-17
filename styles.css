@@ -37,3 +37,35 @@ body[data-phase="lost"] #enemy-panel{order:-1}
 .cell.hit::after{content:"✹";font-size:1.25em;color:#fff4d8;text-shadow:0 0 7px #ffcf78}
 .cell.miss{background:#123d57;border-color:#4385a0}
 .cell.miss::after{content:"≈";font-size:1.2em;color:#8ed9e8;text-shadow:0 0 5px #56d7e8}
+
+/* Design system: motion, feedback and accessible state transitions. */
+:root{
+ --motion-fast:110ms;--motion-normal:190ms;--motion-medium:300ms;
+ --motion-combat:460ms;--motion-event:760ms;
+ --ease-standard:cubic-bezier(.2,0,.38,.9);
+ --ease-enter:cubic-bezier(0,0,.38,.9);
+ --ease-exit:cubic-bezier(.2,0,1,.9);
+}
+.cell{transition:background-color var(--motion-normal) var(--ease-standard),border-color var(--motion-normal) var(--ease-standard),box-shadow var(--motion-normal) var(--ease-standard),transform var(--motion-fast) var(--ease-standard)}
+.cell:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px #00101f66}
+.cell:active:not(:disabled){transform:scale(.96)}
+.cell.ship .ship-art{transition:filter var(--motion-normal) var(--ease-standard),transform var(--motion-medium) var(--ease-standard)}
+.cell.ship{animation:ship-arrive 220ms var(--ease-enter) both}
+.cell.impact-hit{animation:impact-hit var(--motion-combat) var(--ease-out, ease-out) both;z-index:1}
+.cell.impact-miss{animation:impact-miss var(--motion-combat) var(--ease-standard) both}
+.cell.ship-sunk{animation:ship-sink var(--motion-event) var(--ease-standard) both}
+.fleet-item,.board-caption,.status-pill{transition:color var(--motion-normal),border-color var(--motion-normal),background-color var(--motion-normal)}
+.button{transition:transform var(--motion-fast) var(--ease-standard),background-color var(--motion-normal),opacity var(--motion-normal)}
+.button:active:not(:disabled){transform:scale(.97)}
+.phase-enter .intro{animation:phase-intro 360ms var(--ease-enter) both}
+.phase-enter .board-panel{animation:board-enter 420ms var(--ease-enter) both}
+.score{transition:color var(--motion-normal),transform var(--motion-normal)}
+@keyframes ship-arrive{from{opacity:.25;transform:scale(.78)}to{opacity:1;transform:scale(1)}}
+@keyframes impact-hit{0%{transform:scale(.86);filter:brightness(1)}22%{transform:scale(1.09);filter:brightness(1.8);box-shadow:0 0 0 3px #ffbd6966,0 0 22px #ff8a4c99}55%{transform:scale(1.02);filter:brightness(1.3)}100%{transform:scale(1);filter:brightness(1);box-shadow:0 0 0 0 transparent}}
+@keyframes impact-miss{0%{transform:scale(.9)}25%{transform:scale(1.06);box-shadow:0 0 0 3px #56d7e866,0 0 16px #56d7e855}100%{transform:scale(1);box-shadow:none}}
+@keyframes ship-sink{0%,35%{filter:brightness(1.7);transform:scale(1.04)}65%{filter:brightness(.65);transform:translateY(2px) scale(.96)}100%{filter:brightness(.85);transform:scale(1)}}
+@keyframes phase-intro{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes board-enter{from{opacity:.75;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
