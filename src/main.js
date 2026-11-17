@@ -1,5 +1,8 @@
 import { createGame, placePlayerShip, startGame, playerAttack, computerAttack } from "./game-state.js";
+import { initTelegramWebApp } from "./telegram-webapp.js";
 import { render } from "./ui.js";
+
+initTelegramWebApp();
 
 let game = createGame();
 const $ = id => document.getElementById(id);
