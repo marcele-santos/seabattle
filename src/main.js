@@ -58,4 +58,6 @@ $("action-button").addEventListener("click",()=>{if(game.phase==="setup"){if(!st
 $("reset-button").addEventListener("click",()=>{game=createGame(Math.random,$("difficulty").value);resultSaved=false;resolving=false;message("Partida reiniciada. Posicione sua frota.");refresh();});
 $("orientation").addEventListener("change",()=>message(`Orientação: ${$("orientation").value==="horizontal"?"horizontal":"vertical"}.`));
 $("difficulty").addEventListener("change",()=>{game.difficulty=$("difficulty").value;message("Dificuldade definida para a próxima batalha.");refresh();});
+syncSoundControl();
+$("sound-toggle").addEventListener("click",()=>{soundEnabled=!soundEnabled;localStorage.setItem("seabattle.sound",soundEnabled?"on":"off");syncSoundControl();if(soundEnabled)playFeedback({hit:false,star:true});});
 refresh();
