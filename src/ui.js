@@ -8,7 +8,8 @@ export function render(game,handlers,stats){
  document.body.dataset.phase=game.phase;
  if(phaseChanged){document.body.classList.remove("phase-enter");void document.body.offsetWidth;document.body.classList.add("phase-enter");}
  previousPhase=game.phase;
- if(setup&&game.nextShip===0)previousPlayerShips=new Set();\n const animate={player:null,computer:null};
+ if(setup&&game.nextShip===0)previousPlayerShips=new Set();
+ const animate={player:null,computer:null};
  for(const side of ["player","computer"]){const event=game.history.find(x=>x.side===side);if(event){const signature=`${event.turn}:${event.row}:${event.col}:${event.hit}:${event.shipDestroyed}`;if(lastAnimated[side]!==signature)animate[side]=event;lastAnimated[side]=signature;}}
  $("phase-label").textContent=setup?"Preparação":game.phase==="playing"?"Batalha em andamento":game.phase==="won"?"Vitória":"Derrota";
  $("screen-title").textContent=setup?"Posicione sua frota":game.phase==="playing"?"Sua vez de atacar":game.phase==="won"?"Vitória!":"Fim de jogo";
@@ -30,7 +31,10 @@ export function render(game,handlers,stats){
 function draw(id,board,game,setup,enemy,handlers,animation){
  const root=$(id);root.replaceChildren();
  const ships=enemy?game.enemyShips:game.playerShips;
- const sunkIds=new Set(ships.filter(ship=>ship.hits>=ship.length).map(ship=>ship.id));\n const currentShipIds=new Set(ships.map(ship=>ship.id));\n const enteringIds=new Set(!enemy?ships.filter(ship=>!previousPlayerShips.has(ship.id)).map(ship=>ship.id):[]);\n if(!enemy)previousPlayerShips=currentShipIds;
+ const sunkIds=new Set(ships.filter(ship=>ship.hits>=ship.length).map(ship=>ship.id));
+ const currentShipIds=new Set(ships.map(ship=>ship.id));
+ const enteringIds=new Set(!enemy?ships.filter(ship=>!previousPlayerShips.has(ship.id)).map(ship=>ship.id):[]);
+ if(!enemy)previousPlayerShips=currentShipIds;
  const event=animation, sunkId=event?.shipDestroyed?board[event.row]?.[event.col]:null;
  const visibleShips=ships.filter(ship=>!enemy||sunkIds.has(ship.id)).map(ship=>{
   const cells=[];for(let r=0;r<BOARD_SIZE;r++)for(let c=0;c<BOARD_SIZE;c++)if(board[r][c]===ship.id)cells.push({r,c});
@@ -40,7 +44,8 @@ function draw(id,board,game,setup,enemy,handlers,animation){
   const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),shipId=board[r][c],cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
   if(shipId&&(!enemy||sunkIds.has(shipId)))cell.classList.add("ship-cell");
   if(shot)cell.classList.add(shipId?"hit":"miss");
-  if(event&&event.row===r&&event.col===c)cell.classList.add(event.hit?"impact-hit":"impact-miss");\n  if(enemy&&game.phase==="playing"&&!shot)cell.classList.add("target-ready");
+  if(event&&event.row===r&&event.col===c)cell.classList.add(event.hit?"impact-hit":"impact-miss");
+  if(enemy&&game.phase==="playing"&&!shot)cell.classList.add("target-ready");
   if(shipId&&sunkIds.has(shipId))cell.classList.add("ship-sunk");
   if(sunkId&&shipId===sunkId)cell.classList.add("sink-event");
   if(shipId&&(!enemy||sunkIds.has(shipId)))cell.setAttribute("aria-label",`${sunkIds.has(shipId)?"Navio afundado":shot?"Navio atingido":"Navio"} — linha ${r+1}, coluna ${c+1}`);
