@@ -47,10 +47,16 @@ body[data-phase="playing"] .status-pill:before{background:var(--green);box-shado
 .cell.impact-hit::before{animation:blast-ring 560ms ease-out both}
 .cell.impact-hit::after{animation:blast-flash 620ms ease-out both}
 .cell.miss{z-index:2;border-color:#4b8195;background:radial-gradient(circle,#1d5267,#10334a 72%);overflow:hidden}
+.cell.miss::before{content:"";position:absolute;inset:18%;border:2px solid #8fe5ec;border-radius:50%;opacity:0;pointer-events:none}
 .cell.miss::after{content:"≈";color:#9ce8eb;font-size:1.25em;text-shadow:0 0 7px #65d5df88}
+.cell.impact-miss::before{animation:water-ripple 680ms ease-out both}
+.cell.impact-miss::after{animation:water-drop 460ms ease-out both}
+.cell.target-ready:not(:disabled):hover{z-index:4;outline:2px solid #9af0ed;outline-offset:-4px;box-shadow:inset 0 0 18px #65d5df55,0 0 14px #65d5df66}
+.cell.target-ready:not(:disabled):hover::before{content:"";position:absolute;inset:24%;border:1px solid #b7ffff;border-radius:50%;box-shadow:0 0 0 5px #65d5df22;pointer-events:none}
 .cell.star:not(.hit):not(.miss)::after{content:"★";position:absolute;top:2px;right:3px;color:var(--gold);font-size:.62rem;text-shadow:0 0 7px #f5c66b66}
 .fleet-art{position:absolute;inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);overflow:visible;pointer-events:none;z-index:2}
-.fleet-vessel{filter:drop-shadow(0 3px 3px #00111dcc)}\n.fleet-vessel.placement-enter{transform-box:fill-box;transform-origin:center;animation:ship-arrive 420ms cubic-bezier(.16,.8,.3,1.2) both}
+.fleet-vessel{filter:drop-shadow(0 3px 3px #00111dcc)}
+.fleet-vessel.placement-enter{transform-box:fill-box;transform-origin:center;animation:ship-arrive 420ms cubic-bezier(.16,.8,.3,1.2) both}
 .fleet-hull{fill:#527b8e;stroke:#c8e0e2;stroke-width:3.5;stroke-linejoin:round}
 .fleet-deck{fill:#789ba5;stroke:#d3e3df;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.94}
 .fleet-cabin{fill:#315b6d;stroke:#d8e8e8;stroke-width:2}
