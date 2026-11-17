@@ -15,3 +15,11 @@ jobs:
       - run: npm install
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seabattle-visual-review
+          path: test-results/*.png
+          if-no-files-found: warn
+          retention-days: 7
