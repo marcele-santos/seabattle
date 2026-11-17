@@ -4,7 +4,8 @@ const $=id=>document.getElementById(id),names=["Navio grande","Navio médio 1","
 let previousPhase=null,lastAnimated={player:null,computer:null},previousPlayerShips=new Set(),previousScore=null;
 export function render(game,handlers,stats){
  const setup=game.phase==="setup",finished=game.phase==="won"||game.phase==="lost";
- const phaseChanged=previousPhase!==null&&previousPhase!==game.phase;\n if(setup&&previousPhase!=="setup")lastAnimated={player:null,computer:null};
+ const phaseChanged=previousPhase!==null&&previousPhase!==game.phase;
+ if(setup&&previousPhase!=="setup")lastAnimated={player:null,computer:null};
  document.body.dataset.phase=game.phase;
  if(phaseChanged){document.body.classList.remove("phase-enter");void document.body.offsetWidth;document.body.classList.add("phase-enter");}
  previousPhase=game.phase;
@@ -23,7 +24,10 @@ export function render(game,handlers,stats){
  $("action-button").textContent=setup?"Começar batalha":finished?"Jogar novamente":"Ataque pelo tabuleiro";
  $("control-title").textContent=setup?`Posicione: ${names[game.nextShip]||"frota completa"}`:"Comandos de batalha";
  $("control-help").textContent=setup?(game.nextShip===FLEET.length?"Frota completa. Inicie a batalha.":`Navio de ${FLEET[game.nextShip]} casa(s). Clique em uma casa vazia.`):`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
- $("score-value").textContent=game.score;\n if(previousScore!==null&&previousScore!==game.score){const score=$("score-value");score.classList.remove("score-pop");void score.offsetWidth;score.classList.add("score-pop");}\n previousScore=game.score;\n $("history-list").replaceChildren();
+ $("score-value").textContent=game.score;
+ if(previousScore!==null&&previousScore!==game.score){const score=$("score-value");score.classList.remove("score-pop");void score.offsetWidth;score.classList.add("score-pop");}
+ previousScore=game.score;
+ $("history-list").replaceChildren();
  if(!game.history.length){const li=document.createElement("li");li.textContent="Os ataques aparecerão aqui.";$("history-list").append(li);}
  game.history.slice(0,12).forEach(x=>{const li=document.createElement("li"),who=x.side==="player"?"Você":"Computador",out=x.hit?(x.shipDestroyed?"destruiu um navio":"acertou"):x.star?"encontrou uma estrela":"atingiu água";li.textContent=`${who}: linha ${x.row+1}, coluna ${x.col+1} — ${out}`;$("history-list").append(li);});
  $("stats-games").textContent=stats.games;$("stats-wins").textContent=stats.wins;$("stats-best").textContent=stats.bestScore;$("stats-accuracy").textContent=stats.shots?`${Math.round(stats.hits/stats.shots*100)}%`:"—";
