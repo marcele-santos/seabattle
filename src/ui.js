@@ -58,7 +58,7 @@ function draw(id,board,game,setup,enemy,handlers,animation){
    const x1=vertical?fixed*105+52.5:first*105+4,x2=vertical?fixed*105+96:(last+1)*105-4;
    const y1=vertical?first*105+4:fixed*105+4,y2=vertical?(last+1)*105-4:fixed*105+96;
    const d=vertical?`M ${x1-23} ${y1} L ${x1+23} ${y1} L ${x1+23} ${y2-25} Q ${x1} ${y2+2} ${x1-23} ${y2-25} Z`:`M ${x1} ${y1+23} L ${x1+25} ${y1} L ${x2-25} ${y1} Q ${x2+2} ${y1+48} ${x2-25} ${y1+96} L ${x1+25} ${y1+96} Q ${x1-2} ${y1+48} ${x1} ${y1+23} Z`;
-   const path=document.createElementNS(svg.namespaceURI,"path");path.setAttribute("d",d);path.setAttribute("class",`fleet-hull ${sunkIds.has(ship.id)?"sunk":""}`);svg.append(path);
+   const path=document.createElementNS(svg.namespaceURI,"path");path.setAttribute("d",d);path.setAttribute("class",`fleet-hull ${sunkIds.has(ship.id)?"sunk":""} ${ship.id===sunkId?"sink-event":""}`);svg.append(path);
    const mid=vertical?{x:fixed*105+52.5,y:(y1+y2)/2}:{x:(x1+x2)/2,y:fixed*105+52.5};
    const cabin=document.createElementNS(svg.namespaceURI,"path");
    const cd=vertical?`M ${mid.x-15} ${mid.y-18} L ${mid.x+15} ${mid.y-18} L ${mid.x+19} ${mid.y+17} L ${mid.x-19} ${mid.y+17} Z`:`M ${mid.x-18} ${mid.y-19} L ${mid.x+18} ${mid.y-19} L ${mid.x+24} ${mid.y+17} L ${mid.x-24} ${mid.y+17} Z`;
