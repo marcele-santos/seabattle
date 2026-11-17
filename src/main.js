@@ -40,9 +40,9 @@ $("action-button").addEventListener("click", () => {
     message("Batalha iniciada. Escolha uma casa no campo inimigo.");
   } else if (game.phase === "won" || game.phase === "lost") {
     game = createGame();
+    message("Nova partida iniciada. Posicione sua frota.");
   } else {
     return;
-    message("Nova partida iniciada. Posicione sua frota.");
   }
   refresh();
 });
