@@ -25,7 +25,7 @@ function draw(id,board,game,setup,enemy,handlers){
  const root=$(id);root.replaceChildren();
  for(let r=0;r<BOARD_SIZE;r++)for(let c=0;c<BOARD_SIZE;c++){
   const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
-  if(board[r][c]&&!enemy)cell.classList.add("ship");if(shot)cell.classList.add(board[r][c]?"hit":"miss");
+  if(board[r][c]&&!enemy){cell.classList.add("ship");const horizontal=Boolean(board[r][c-1]||board[r][c+1]),vertical=Boolean(board[r-1]?.[c]||board[r+1]?.[c]);const axis=horizontal?"horizontal":vertical?"vertical":"single";const before=horizontal?Boolean(board[r][c-1]):vertical?Boolean(board[r-1]?.[c]):false;const after=horizontal?Boolean(board[r][c+1]):vertical?Boolean(board[r+1]?.[c]):false;cell.dataset.axis=axis;cell.dataset.segment=before?(after?"middle":"end"):(after?"start":"single");cell.innerHTML='<svg class="ship-art" viewBox="0 0 100 100" aria-hidden="true"><path class="ship-hull" d="M 8 43 L 92 43 L 78 70 Q 50 83 22 70 Z"/><path class="ship-deck" d="M 24 39 L 76 39 M 35 51 L 65 51"/><path class="ship-cabin" d="M 39 26 L 61 26 L 67 43 L 33 43 Z"/></svg>';cell.setAttribute("aria-label",`Navio — linha ${r+1}, coluna ${c+1}`);}if(shot)cell.classList.add(board[r][c]?"hit":"miss");
   cell.disabled=enemy?(game.phase!=="playing"||shot):!setup;if(setup&&!enemy)cell.addEventListener("click",()=>handlers.place(r,c));if(enemy&&game.phase==="playing")cell.addEventListener("click",()=>handlers.attack(r,c));root.append(cell);
  }
 }
