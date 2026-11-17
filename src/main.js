@@ -2,7 +2,6 @@ import { createGame, placePlayerShip, startGame, playerAttack, computerAttack } 
 import { render } from "./ui.js";
 
 let game = createGame();
-let selectedTarget = null;
 const $ = id => document.getElementById(id);
 
 function message(text) { $("feedback").textContent = text; }
@@ -21,7 +20,6 @@ function place(row, col) {
 function attack(row, col) {
   const result = playerAttack(game, row, col);
   if (!result.ok) return;
-  selectedTarget = [row, col];
   if (result.hit) message(result.shipDestroyed ? "Navio inimigo destruído!" : "Acertou um navio!");
   else message(result.star ? "Água, mas você encontrou uma estrela bônus!" : "Água. O computador vai responder.");
   if (result.finished) {
@@ -40,8 +38,10 @@ $("action-button").addEventListener("click", () => {
   if (game.phase === "setup") {
     if (!startGame(game)) return;
     message("Batalha iniciada. Escolha uma casa no campo inimigo.");
-  } else {
+  } else if (game.phase === "won" || game.phase === "lost") {
     game = createGame();
+  } else {
+    return;
     message("Nova partida iniciada. Posicione sua frota.");
   }
   refresh();
