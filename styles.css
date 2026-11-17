@@ -199,3 +199,12 @@ body[data-phase="lost"] .status-pill{border-color:#a65b5b;color:#ffaaa3}
 @media(prefers-reduced-motion:reduce){
  .score.score-pop,.history-list li:first-child{animation:none}
 }
+
+#auto-place-button{border-color:#3a796d;background:#123b3b;color:#a5ead1}
+#auto-place-button:hover:not(:disabled){border-color:#69bda2;background:#174a43}
+#auto-place-button[hidden]{display:none}
+@media(max-width:760px){
+ #auto-place-button{grid-column:1/-1;min-height:46px}
+ body[data-phase="playing"] #enemy-panel .board-wrap{max-width:min(100%,440px)}
+ body[data-phase="playing"] #player-panel .board-wrap{max-width:min(76vw,280px)}
+}
