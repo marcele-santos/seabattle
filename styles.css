@@ -34,8 +34,8 @@ body[data-phase="playing"] .status-pill:before{background:var(--green);box-shado
 .board-heading .eyebrow{margin-bottom:5px}
 .board-caption{padding:6px 10px;font-size:.66rem}
 .board-wrap{width:100%;max-width:500px;margin:0 auto}
-.board{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;aspect-ratio:1;padding:7px;border:1px solid #31556b;border-radius:12px;background:linear-gradient(145deg,#0a263b,#071b2d);box-shadow:inset 0 0 28px #020c1666,0 8px 22px #0002;overflow:visible}
-.cell{position:relative;z-index:0;display:grid;place-items:center;min-width:0;min-height:0;aspect-ratio:1;padding:0;overflow:hidden;border:1px solid #24465e;border-radius:5px;background:linear-gradient(145deg,#12334b,#0d2940);color:var(--text);font-size:clamp(.65rem,1.8vw,1rem);font-weight:700;cursor:pointer;touch-action:manipulation;transition:background var(--motion-normal) var(--ease-standard),border-color var(--motion-normal) var(--ease-standard),box-shadow var(--motion-normal) var(--ease-standard),transform var(--motion-fast) var(--ease-standard)}
+.board{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:0;aspect-ratio:1;padding:7px;border:1px solid #31556b;border-radius:12px;background:linear-gradient(145deg,#0a263b,#071b2d);box-shadow:inset 0 0 28px #020c1666,0 8px 22px #0002;overflow:visible}
+.cell{position:relative;z-index:0;display:grid;place-items:center;min-width:0;min-height:0;aspect-ratio:1;padding:0;overflow:hidden;border:1px solid #24465e;border-radius:0;background:linear-gradient(145deg,#12334b,#0d2940);color:var(--text);font-size:clamp(.65rem,1.8vw,1rem);font-weight:700;cursor:pointer;touch-action:manipulation;transition:background var(--motion-normal) var(--ease-standard),border-color var(--motion-normal) var(--ease-standard),box-shadow var(--motion-normal) var(--ease-standard),transform var(--motion-fast) var(--ease-standard)}
 .cell:hover:not(:disabled){z-index:1;border-color:var(--cyan);background:#1a4960;box-shadow:0 0 0 1px #65d5df33,0 3px 10px #0005;transform:translateY(-1px)}
 .cell:active:not(:disabled){transform:scale(.96)}
 .cell:disabled{cursor:default;opacity:1}
@@ -47,16 +47,21 @@ body[data-phase="playing"] .status-pill:before{background:var(--green);box-shado
 .cell.miss::after{content:"≈";color:#9ce8eb;font-size:1.25em;text-shadow:0 0 7px #65d5df88}
 .cell.star:not(.hit):not(.miss)::after{content:"★";position:absolute;top:2px;right:3px;color:var(--gold);font-size:.62rem;text-shadow:0 0 7px #f5c66b66}
 .fleet-art{position:absolute;inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);overflow:visible;pointer-events:none;z-index:2}
-.fleet-hull{fill:#a9c9ce;stroke:#e3f3ed;stroke-width:3.2;stroke-linejoin:round;filter:drop-shadow(0 2px 2px #001522aa)}
-.fleet-cabin{fill:#5b8d98;stroke:#d9eeea;stroke-width:2.1;stroke-linejoin:round}
-.fleet-deck{fill:none;stroke:#315e6b;stroke-width:4;stroke-linecap:round}
-.fleet-hull.sunk{fill:#d9b98a;stroke:#ffedc7;filter:drop-shadow(0 0 6px #f5c66b99)}
+.fleet-vessel{filter:drop-shadow(0 3px 3px #00111dcc)}
+.fleet-hull{fill:#829da6;stroke:#d8e8e8;stroke-width:3.5;stroke-linejoin:round}
+.fleet-deck{fill:none;stroke:#d3e3df;stroke-width:2;stroke-linecap:round;opacity:.82}
+.fleet-cabin{fill:#385e6c;stroke:#d8e8e8;stroke-width:2.5}
+.fleet-bridge{fill:#a9c9c8;stroke:#284c5b;stroke-width:1.5}
+.fleet-detail{fill:none;stroke:#385e6c;stroke-width:3;stroke-linecap:round}
+.fleet-vessel.sunk .fleet-hull{fill:#c3a276;stroke:#ffdfad;filter:drop-shadow(0 0 7px #f5c66b99)}
+.fleet-vessel.sunk .fleet-deck{stroke:#fff0d2}
+
 .fleet-damage{fill:none;stroke:#a94339;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
 .cell.ship-cell.hit::after{position:relative;z-index:4}
 .cell.ship-sunk{background:#513b3b}
 .cell.impact-hit{animation:impact-hit var(--motion-combat) ease-out both}
 .cell.impact-miss{animation:impact-miss var(--motion-combat) var(--ease-standard) both}
-.fleet-hull.sink-event{animation:ship-sink var(--motion-event) var(--ease-standard) both;transform-box:fill-box;transform-origin:center}
+.fleet-vessel.sink-event{animation:ship-sink var(--motion-event) var(--ease-standard) both;transform-box:fill-box;transform-origin:center}
 .controls{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px 20px;margin-top:16px;padding:18px 22px}
 .control-copy h2{font-size:.98rem}
 .control-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
