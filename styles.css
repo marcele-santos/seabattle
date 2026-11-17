@@ -208,3 +208,5 @@ body[data-phase="lost"] .status-pill{border-color:#a65b5b;color:#ffaaa3}
  body[data-phase="playing"] #enemy-panel .board-wrap{max-width:min(100%,440px)}
  body[data-phase="playing"] #player-panel .board-wrap{max-width:min(76vw,280px)}
 }
+
+body[data-phase="playing"] .select-label[for="orientation"],body[data-phase="playing"] .select-label[for="difficulty"]{display:none}
