@@ -136,5 +136,5 @@ body[data-phase="playing"] .control-actions{justify-content:flex-end}
  .topbar h1{font-size:2.15rem}
  .status-pill{white-space:nowrap}
 }
-@media(max-width:390px){.board{gap:3px;padding:5px}.fleet-item{font-size:.63rem;padding:6px 8px}.board-panel{padding:11px}.board-caption{font-size:.6rem;padding:5px 8px}}
+@media(max-width:390px){.board{gap:0;padding:7px}.fleet-item{font-size:.63rem;padding:6px 8px}.board-panel{padding:11px}.board-caption{font-size:.6rem;padding:5px 8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
