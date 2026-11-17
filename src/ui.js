@@ -10,7 +10,7 @@ export function render(game,handlers,stats){
  previousPhase=game.phase;
  if(setup&&game.nextShip===0)previousPlayerShips=new Set();
  const animate={player:null,computer:null};
- for(const side of ["player","computer"]){const event=game.history.find(x=>x.side===side);if(event){const signature=`${event.turn}:${event.row}:${event.col}:${event.hit}:${event.shipDestroyed}`;if(lastAnimated[side]!==signature)animate[side]=event;lastAnimated[side]=signature;}}
+ for(const side of ["player","computer"]){const event=game.history.find(x=>x.side===side);if(event){const signature=`${event.turn}:${event.row}:${event.col}:${event.hit}:${event.star}:${event.shipDestroyed}`;if(lastAnimated[side]!==signature)animate[side]=event;lastAnimated[side]=signature;}}
  $("phase-label").textContent=setup?"Preparação":game.phase==="playing"?"Batalha em andamento":game.phase==="won"?"Vitória":"Derrota";
  $("screen-title").textContent=setup?"Posicione sua frota":game.phase==="playing"?"Sua vez de atacar":game.phase==="won"?"Vitória!":"Fim de jogo";
  $("screen-description").textContent=setup?"Escolha a orientação e selecione as casas do seu navio.":game.phase==="playing"?"Ataque uma casa do campo inimigo. O computador responderá em seguida.":"Partida encerrada. Confira o resultado e inicie outra batalha.";
@@ -44,7 +44,8 @@ function draw(id,board,game,setup,enemy,handlers,animation){
   const key=r*BOARD_SIZE+c,shot=enemy?game.enemyShots.has(key):game.playerShots.has(key),shipId=board[r][c],cell=document.createElement("button");cell.type="button";cell.className="cell";cell.setAttribute("aria-label",`Linha ${r+1}, coluna ${c+1}`);
   if(shipId&&(!enemy||sunkIds.has(shipId)))cell.classList.add("ship-cell");
   if(shot)cell.classList.add(shipId?"hit":"miss");
-  if(event&&event.row===r&&event.col===c)cell.classList.add(event.hit?"impact-hit":"impact-miss");
+  if(enemy&&shot&&game.starCells.has(key))cell.classList.add("star");
+  if(event&&event.row===r&&event.col===c)cell.classList.add(event.hit?"impact-hit":event.star?"impact-star":"impact-miss");
   if(enemy&&game.phase==="playing"&&!shot)cell.classList.add("target-ready");
   if(shipId&&sunkIds.has(shipId))cell.classList.add("ship-sunk");
   if(sunkId&&shipId===sunkId)cell.classList.add("sink-event");
