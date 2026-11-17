@@ -36,6 +36,14 @@ test("ataque não pode ser repetido e registra acerto", () => {
   assert.equal(resolveAttack(game, 0, 0).reason, "repeat");
 });
 
+test("estrelas bônus são distribuídas somente em casas de água", () => {
+  const game = createGame();
+  assert.equal(game.starCells.size, 5);
+  for (const key of game.starCells) {
+    assert.equal(game.enemyBoard[Math.floor(key / 8)][key % 8], null);
+  }
+});
+
 test("fluxo da partida exige posicionar a frota antes de iniciar", () => {
   const game = createGame();
   assert.equal(startGame(game), false);
