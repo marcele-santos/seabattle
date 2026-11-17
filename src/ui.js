@@ -20,10 +20,10 @@ export function render(game,handlers,stats){
  $("enemy-caption").textContent=setup?"Bloqueado":`${getRemainingShips(game.enemyShips)} navio(s) ativo(s)`;
  $("fleet-status").innerHTML=FLEET.map((n,i)=>`<span class="fleet-item ${i<game.nextShip?"done":i===game.nextShip&&setup?"active":""}">${names[i]} · ${n}</span>`).join("");
  draw("player-board",game.playerBoard,game,setup,false,handlers,animate.computer);draw("enemy-board",game.enemyBoard,game,false,true,handlers,animate.player);
- $("orientation").disabled=!setup;$("difficulty").disabled=!setup;$("action-button").disabled=(setup&&game.nextShip!==FLEET.length)||game.phase==="playing";
+ $("orientation").disabled=!setup;$("difficulty").disabled=!setup;$("auto-place-button").hidden=!setup;$("action-button").disabled=(setup&&game.nextShip!==FLEET.length)||game.phase==="playing";
  $("action-button").textContent=setup?"Começar batalha":finished?"Jogar novamente":"Ataque pelo tabuleiro";
  $("control-title").textContent=setup?`Posicione: ${names[game.nextShip]||"frota completa"}`:"Comandos de batalha";
- $("control-help").textContent=setup?(game.nextShip===FLEET.length?"Frota completa. Inicie a batalha.":`Navio de ${FLEET[game.nextShip]} casa(s). Clique em uma casa vazia.`):`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
+ $("control-help").textContent=setup?(game.nextShip===FLEET.length?"Frota completa. Inicie a batalha.":`Navio de ${FLEET[game.nextShip]} casa(s). Toque no tabuleiro ou use posicionamento automático.`):`Dificuldade: ${difficulty[game.difficulty]}. Pontuação: ${game.score}. Estrelas encontradas: ${game.stars}.`;
  $("score-value").textContent=game.score;
  if(previousScore!==null&&previousScore!==game.score){const score=$("score-value");score.classList.remove("score-pop");void score.offsetWidth;score.classList.add("score-pop");}
  previousScore=game.score;
