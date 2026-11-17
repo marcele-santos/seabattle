@@ -1,18 +1,13 @@
 # Batalha Naval
 
-MVP de um jogo de Batalha Naval para navegador, com lógica independente da interface e inicialização compatível com Telegram Mini Apps.
+Jogo de Batalha Naval para navegador. O adaptador inicial para Telegram permanece no repositório, mas a integração está pausada.
 
-## Requisitos
-- Node.js 20+ (para executar os testes).
-- Navegador moderno (para jogar).
-
-## Executar localmente
-Não há etapa de build nem dependências externas de runtime. Abra `index.html` no navegador ou inicie um servidor estático:
+## Execução local
+Requer Node.js 20+ para testes e navegador moderno para jogar.
 
 ```bash
 python3 -m http.server 8000
 ```
-
 Acesse http://localhost:8000.
 
 ## Testes
@@ -21,27 +16,20 @@ npm test
 npm run test:e2e
 ```
 
-## Regras do MVP
-- Tabuleiro 8×8.
-- Frota: 1 navio de 3 casas, 2 navios de 2 casas e 2 navios de 1 casa.
-- Posicionamento manual do jogador; a frota adversária é posicionada automaticamente.
-- Partidas por turnos contra um oponente controlado pelo computador.
-- Cada ataque revela água ou acerto; vence quem destruir toda a frota adversária.
-- Algumas casas de água concedem estrelas. Elas são bônus de pontuação e não alteram o resultado de um ataque.
+## Recursos e regras
+- Tabuleiro 8×8; frota com navios de 3, 2, 2, 1 e 1 casas.
+- Posicionamento manual, turnos alternados, vitória e derrota.
+- Casas de água especiais concedem estrelas bônus.
+- Fácil: ataques aleatórios. Normal: prioriza casas adjacentes após acerto. Difícil: usa adjacências e padrão de busca em casas alternadas.
+- Pontuação: 100 por acerto, +50 por navio destruído, 25 por estrela e 500 pela vitória.
+- Histórico de ataques, navios restantes e revanche.
+- Estatísticas, precisão e recorde persistidos no armazenamento local do navegador. Não há sincronização entre dispositivos.
 
-## Integração Telegram Mini App
-- O SDK oficial do Telegram é carregado antes do módulo principal.
-- `src/telegram-webapp.js` detecta o ambiente Telegram, chama `ready()` e `expand()` e mantém o jogo funcional em navegador comum.
-- O módulo não expõe nem transmite `initData` ou dados pessoais do usuário.
-- Para abrir o jogo dentro do Telegram, publique o site em HTTPS e configure a URL como Mini App em um bot pelo BotFather.
-- A inicialização no cliente **não autentica o usuário**. Antes de adicionar placares, partidas online, recompensas ou qualquer dado confiável, será necessário um backend que valide `Telegram.WebApp.initData` no servidor. Nunca confie em dados de usuário enviados apenas pelo cliente.
+## Acessibilidade e responsividade
+Controles nativos, foco visível, rótulos nas casas, mensagens anunciadas por leitores de tela e layout adaptável a telas estreitas.
 
-## Arquitetura
-- `src/game-engine.js`: regras puras, posicionamento e resolução de ataques.
-- `src/game-state.js`: estado da partida e transições.
-- `src/telegram-webapp.js`: adaptação opcional ao ambiente Telegram.
-- `src/ui.js`: renderização e interação com o DOM.
-- `src/main.js`: inicialização e ligação entre estado e interface.
+## Publicação web
+O workflow Deploy to GitHub Pages publica o site após push em main. Em Settings → Pages, selecione GitHub Actions como fonte de publicação. A URL final aparecerá no workflow e nas configurações do Pages após um deployment concluído. Repositórios privados podem exigir plano compatível com GitHub Pages.
 
-## Estado
-MVP web com adaptador inicial para Telegram Mini Apps. Bot, backend, autenticação, partidas multiplayer e persistência ainda não estão implementados.
+## Telegram
+A compatibilidade inicial permanece sem alterações nesta etapa. O cliente não autentica usuários; funcionalidades futuras com dados confiáveis exigirão validação de initData no servidor.
