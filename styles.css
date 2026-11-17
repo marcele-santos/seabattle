@@ -64,10 +64,15 @@ body[data-phase="playing"] .status-pill:before{background:var(--green);box-shado
 .fleet-detail{fill:none;stroke:#d6e7e5;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .fleet-turret-barrel{fill:none;stroke:#e3eeee;stroke-width:3.5;stroke-linecap:round}
 .fleet-turret-base{fill:#a9c5c8;stroke:#294e5c;stroke-width:2}
-.fleet-vessel.sunk .fleet-hull{fill:#c3a276;stroke:#ffdfad;filter:drop-shadow(0 0 7px #f5c66b99)}
-.fleet-vessel.sunk .fleet-deck{stroke:#fff0d2}
-
-.fleet-damage{fill:none;stroke:#a94339;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.fleet-vessel.sunk .fleet-hull{fill:#343b40;stroke:#171d22;stroke-width:5;filter:drop-shadow(0 2px 3px #000b)}
+.fleet-vessel.sunk .fleet-deck{fill:#51565a;stroke:#20262b;stroke-width:3;opacity:.78}
+.fleet-vessel.sunk .fleet-cabin,.fleet-vessel.sunk .fleet-bridge{fill:#35383a;stroke:#171b1e}
+.fleet-vessel.sunk .fleet-turret-base{fill:#414548;stroke:#171b1e}
+.fleet-wreck{pointer-events:none}
+.fleet-break{fill:none;stroke:#171b1e;stroke-width:9;stroke-linecap:round;stroke-linejoin:bevel}
+.fleet-scorch{fill:none;stroke:#171b1e;stroke-width:10;stroke-linecap:round;opacity:.9}
+.fleet-damage{fill:none;stroke:#d05c4b;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:bevel}
+.fleet-vessel.sunk .fleet-detail,.fleet-vessel.sunk .fleet-turret-barrel{stroke:#292e32;opacity:.7}
 .cell.ship-cell.hit::after{position:relative;z-index:4}
 .cell.ship-sunk{background:#513b3b}
 .cell.impact-hit{animation:impact-hit var(--motion-combat) ease-out both}
