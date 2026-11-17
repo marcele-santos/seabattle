@@ -19,8 +19,8 @@ export function render(game, handlers) {
   drawBoard("player-board", game.playerBoard, game, setup, false, handlers);
   drawBoard("enemy-board", game.enemyBoard, game, false, true, handlers);
   $("orientation").disabled = !setup;
-  $("action-button").disabled = setup && game.nextShip !== FLEET.length;
-  $("action-button").textContent = setup ? "Começar batalha" : game.phase === "playing" ? "Atacar selecionado" : "Jogar novamente";
+  $("action-button").disabled = (setup && game.nextShip !== FLEET.length) || game.phase === "playing";
+  $("action-button").textContent = setup ? "Começar batalha" : game.phase === "playing" ? "Ataque pelo tabuleiro" : "Jogar novamente";
   $("reset-button").textContent = "Reiniciar";
   $("control-title").textContent = setup ? `Posicione: ${fleetNames[game.nextShip] || "frota completa"}` : "Comandos de batalha";
   $("control-help").textContent = setup ? `Navio de ${FLEET[game.nextShip] ?? "—"} casa(s). Clique em uma casa vazia para posicionar.` : `Estrelas bônus: ${game.stars}. Cada estrela aparece em uma casa de água do campo inimigo.`;
