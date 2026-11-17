@@ -117,7 +117,10 @@ function draw(id,board,game,setup,enemy,handlers,animation){
     const damage=document.createElementNS(svg.namespaceURI,"path");
     damage.setAttribute("class","fleet-damage");
     damage.setAttribute("d",`M ${cabinCenter-13} ${cy-17} l 8 12 -12 9 14 9 M ${x1-48} ${cy-15} l -8 11 10 8 -7 12`);
-    wreck.append(breakLine,scorch,damage);group.append(wreck);
+    const splinters=document.createElementNS(svg.namespaceURI,"path");
+    splinters.setAttribute("class","fleet-splinters");
+    splinters.setAttribute("d",`M ${cabinCenter-22} ${cy-25} l -15 -13 5 18 M ${cabinCenter+17} ${cy+23} l 18 13 -7 -19 M ${x1-20} ${cy-5} l 17 -11 -8 17`);
+    wreck.append(breakLine,scorch,damage,splinters);group.append(wreck);
    }
    svg.append(group);
   }
