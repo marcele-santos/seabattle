@@ -47,12 +47,17 @@ export function createFleetBoard(random = Math.random) {
   return { board, ships };
 }
 
-export function createStarCells(random = Math.random, count = 5) {
+export function createStarCells(random = Math.random, count = 5, board = null) {
+  const candidates = Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, key) => key)
+    .filter(key => !board || board[Math.floor(key / BOARD_SIZE)][key % BOARD_SIZE] === null);
   const cells = new Set();
-  while (cells.size < count) {
-    const row = Math.floor(random() * BOARD_SIZE);
-    const col = Math.floor(random() * BOARD_SIZE);
-    cells.add(row * BOARD_SIZE + col);
+  const limit = Math.min(count, candidates.length);
+
+  for (let i = 0; i < limit; i++) {
+    const offset = Math.min(candidates.length - i - 1, Math.floor(random() * (candidates.length - i)));
+    const selected = i + Math.max(0, offset);
+    [candidates[i], candidates[selected]] = [candidates[selected], candidates[i]];
+    cells.add(candidates[i]);
   }
   return cells;
 }
