@@ -31,7 +31,7 @@ function drawBoard(id, board, game, setup, enemy, handlers) {
   root.replaceChildren();
   for (let r = 0; r < BOARD_SIZE; r++) for (let c = 0; c < BOARD_SIZE; c++) {
     const key = r * BOARD_SIZE + c;
-    const shot = enemy ? game.playerShots.has(key) : game.enemyShots.has(key);
+    const shot = enemy ? game.enemyShots.has(key) : game.playerShots.has(key);
     const cell = document.createElement("button");
     cell.type = "button";
     cell.className = "cell";
