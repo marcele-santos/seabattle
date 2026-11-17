@@ -60,3 +60,18 @@ test("água e estrela têm feedback visual distinto e som pode ser desligado",as
  await expect(page.locator("#sound-toggle")).toHaveAttribute("aria-pressed","false");
  await expect(page.locator("#sound-toggle")).toContainText("desligado");
 });
+
+test("posicionamento automático cria frota válida e inicia a batalha",async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto("/");
+ await page.locator("#auto-place-button").click();
+ await expect(page.locator("#fleet-status .fleet-item.done")).toHaveCount(5);
+ await expect(page.locator("#player-board .cell.ship-cell")).toHaveCount(9);
+ await expect(page.locator("#action-button")).toBeEnabled();
+ await page.locator("#action-button").click();
+ await expect(page.locator("#phase-label")).toHaveText("Batalha em andamento");
+ await expect(page.locator("#auto-place-button")).toBeHidden();
+ await expect(page.locator("#enemy-board .cell")).toHaveCount(64);
+ await page.screenshot({path:"test-results/mobile-battle.png",fullPage:true});
+ await expect(page.locator("#enemy-board .cell").first()).toBeEnabled();
+});
