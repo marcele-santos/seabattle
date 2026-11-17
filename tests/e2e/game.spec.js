@@ -10,8 +10,11 @@ test("posiciona frota, inicia batalha e registra ataques",async({page})=>{
  await page.locator("#orientation").selectOption("horizontal");
  for(const i of [32,48,58])await page.locator("#player-board .cell").nth(i).click();
  await expect(page.locator("#fleet-status .fleet-item.done")).toHaveCount(5);
- await expect(page.locator("#player-board .fleet-vessel[transform^='rotate(90)']")).toHaveCount(1);
+ await expect(page.locator("#player-board .cell.ship-cell")).toHaveCount(9);
  await page.screenshot({path:"test-results/desktop-setup.png",fullPage:true});
+ const vesselTransforms=await page.locator("#player-board .fleet-vessel").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("transform")));
+ console.log("Ship transforms:",vesselTransforms);
+ expect(vesselTransforms.filter(value=>value?.includes("rotate(90")).length).toBe(1);
  await page.locator("#action-button").click();
  await expect(page.locator("#phase-label")).toHaveText("Batalha em andamento");
  await expect(page.locator("#enemy-panel")).toBeVisible();
