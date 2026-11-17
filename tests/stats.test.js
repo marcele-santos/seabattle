@@ -1,0 +1,5 @@
+import test from "node:test";import assert from "node:assert/strict";import {emptyStats,loadStats,saveResult} from "../src/stats.js";
+function storage(value=null){return {getItem:()=>value,setItem:(_k,v)=>{value=v;},read:()=>value};}
+test("estatísticas persistem resultado da partida",()=>{const s=storage(),g={phase:"won",score:750,playerShots:new Set([1,2]),history:[{side:"player",hit:true},{side:"player",hit:false}]};const next=saveResult(loadStats(s),g,s);assert.deepEqual(next,{games:1,wins:1,losses:0,bestScore:750,totalScore:750,shots:2,hits:1});assert.deepEqual(loadStats(s),next);});
+test("armazenamento inválido ou bloqueado não interrompe jogo",()=>{assert.deepEqual(loadStats(storage("{")),emptyStats());const blocked={getItem(){throw Error("blocked")},setItem(){throw Error("blocked")}};assert.deepEqual(loadStats(blocked),emptyStats());assert.equal(saveResult(emptyStats(),{phase:"lost",score:5,playerShots:new Set(),history:[]},blocked).losses,1);});
+test("campos inválidos são ignorados",()=>{const x=loadStats(storage(JSON.stringify({games:3,wins:-2,bestScore:"x"})));assert.equal(x.games,3);assert.equal(x.wins,0);assert.equal(x.bestScore,0);});
