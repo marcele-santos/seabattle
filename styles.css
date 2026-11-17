@@ -170,3 +170,32 @@ body[data-phase="playing"] .control-actions{justify-content:flex-end}
 }
 @media(max-width:390px){.board{gap:0;padding:7px}.fleet-item{font-size:.63rem;padding:6px 8px}.board-panel{padding:11px}.board-caption{font-size:.6rem;padding:5px 8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Mobile game polish: clear focus, tactile controls and event feedback. */
+.sound-toggle{min-width:118px}
+.button,.cell{ -webkit-tap-highlight-color:transparent; }
+.button:focus-visible,.cell:focus-visible{outline:3px solid var(--gold);outline-offset:2px;z-index:5}
+.button-primary{font-weight:850;letter-spacing:.01em}
+.cell{user-select:none;-webkit-user-select:none}
+.cell.target-ready{background-image:linear-gradient(145deg,#163b52,#0e2b42)}
+.cell.impact-miss{will-change:transform,box-shadow}
+.cell.impact-star{border-color:#ffe19a;box-shadow:inset 0 0 0 2px #f5c66b88,0 0 22px #f5c66b99;will-change:transform,box-shadow}
+.cell.impact-star::before{animation:star-ripple 760ms cubic-bezier(.16,.7,.25,1) both}
+.cell.impact-star::after{filter:drop-shadow(0 0 8px #ffd76b)}
+@keyframes star-ripple{0%{opacity:1;transform:scale(.15);border-width:3px}100%{opacity:0;transform:scale(3.8);border-width:1px}}
+.score.score-pop{animation:score-pop 360ms cubic-bezier(.16,.8,.3,1.2)}
+@keyframes score-pop{0%{transform:scale(1)}45%{transform:scale(1.18);color:#fff0b2;text-shadow:0 0 18px #f5c66b88}100%{transform:scale(1)}}
+.history-list li:first-child{color:#f2d28d;font-weight:750;animation:history-arrive 260ms ease-out}
+@keyframes history-arrive{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.status-pill{transition:border-color var(--motion-normal),background var(--motion-normal)}
+body[data-phase="won"] .status-pill{border-color:#4a9b78;color:#9ae6c0}
+body[data-phase="lost"] .status-pill{border-color:#a65b5b;color:#ffaaa3}
+@media(max-width:760px){
+ .sound-toggle{grid-column:1/-1;width:100%}
+ .control-actions #action-button{min-height:48px;font-size:.88rem}
+ .control-actions #reset-button{min-height:44px}
+ .cell{font-size:clamp(.78rem,3vw,1rem)}
+}
+@media(prefers-reduced-motion:reduce){
+ .score.score-pop,.history-list li:first-child{animation:none}
+}
