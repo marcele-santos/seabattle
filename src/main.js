@@ -6,13 +6,42 @@ initTelegramWebApp();
 let stats=loadStats(),game=createGame(Math.random,document.getElementById("difficulty").value),resultSaved=false,resolving=false;
 const $=id=>document.getElementById(id);
 function message(value){$("feedback").textContent=value;}
+let soundEnabled=localStorage.getItem("seabattle.sound")!=="off";
+function syncSoundControl(){
+ const button=$("sound-toggle");
+ button.textContent=soundEnabled?"Som: ligado":"Som: desligado";
+ button.setAttribute("aria-pressed",String(soundEnabled));
+ button.setAttribute("aria-label",soundEnabled?"Desativar sons":"Ativar sons");
+}
+function playFeedback(result){
+ if(navigator.vibrate) navigator.vibrate(result.star?[18,35,28]:result.hit?24:10);
+ if(!soundEnabled)return;
+ const Audio=window.AudioContext||window.webkitAudioContext;
+ if(!Audio)return;
+ try{
+  const context=new Audio();
+  const now=context.currentTime;
+  const notes=result.star?[880,1174]:result.hit?[220,440]:[330,247];
+  notes.forEach((frequency,index)=>{
+   const oscillator=context.createOscillator(),gain=context.createGain();
+   oscillator.type=result.star?"sine":result.hit?"triangle":"sine";
+   oscillator.frequency.setValueAtTime(frequency,now+index*.075);
+   gain.gain.setValueAtTime(.0001,now+index*.075);
+   gain.gain.exponentialRampToValueAtTime(.055,now+index*.075+.012);
+   gain.gain.exponentialRampToValueAtTime(.0001,now+index*.075+.11);
+   oscillator.connect(gain);gain.connect(context.destination);
+   oscillator.start(now+index*.075);oscillator.stop(now+index*.075+.12);
+  });
+  window.setTimeout(()=>context.close(),450);
+ }catch(error){/* Audio is an enhancement; gameplay must not depend on it. */}
+}
 function refresh(){render(game,{place,attack,isBusy:resolving},stats);}
 function finish(){if((game.phase==="won"||game.phase==="lost")&&!resultSaved){stats=saveResult(stats,game);resultSaved=true;}}
 function place(row,col){const result=placePlayerShip(game,row,col,$("orientation").value);if(!result.ok)return message("Posição inválida. Escolha outra casa ou orientação.");message(result.complete?"Frota posicionada. Inicie a batalha.":"Navio posicionado.");refresh();}
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function attack(row,col){
  if(resolving)return;
- const result=playerAttack(game,row,col);if(!result.ok)return;
+ const result=playerAttack(game,row,col);if(!result.ok)return;playFeedback(result);
  const attackedGame=game;
  resolving=true;
  message(result.hit?(result.shipDestroyed?"Navio inimigo destruído! +150 pontos.":"Acertou um navio! +100 pontos."):result.star?"Água, mas encontrou uma estrela bônus! +25 pontos.":"Água. O computador vai responder.");
