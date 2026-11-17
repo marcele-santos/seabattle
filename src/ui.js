@@ -54,17 +54,42 @@ function draw(id,board,game,setup,enemy,handlers,animation){
   svg.setAttribute("class","fleet-art");svg.setAttribute("viewBox","0 0 840 840");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
   for(const ship of visibleShips){
    const rows=ship.cells.map(x=>x.r),cols=ship.cells.map(x=>x.c),vertical=rows.length>1&&new Set(cols).size===1;
-   const first=vertical?Math.min(...rows):Math.min(...cols),fixed=vertical?cols[0]:rows[0],last=first+ship.length-1;
-   const x1=vertical?fixed*105+52.5:first*105+4,x2=vertical?fixed*105+96:(last+1)*105-4;
-   const y1=vertical?first*105+4:fixed*105+4,y2=vertical?(last+1)*105-4:fixed*105+96;
-   const d=vertical?`M ${x1-23} ${y1} L ${x1+23} ${y1} L ${x1+23} ${y2-25} Q ${x1} ${y2+2} ${x1-23} ${y2-25} Z`:`M ${x1} ${y1+23} L ${x1+25} ${y1} L ${x2-25} ${y1} Q ${x2+2} ${y1+48} ${x2-25} ${y1+96} L ${x1+25} ${y1+96} Q ${x1-2} ${y1+48} ${x1} ${y1+23} Z`;
-   const path=document.createElementNS(svg.namespaceURI,"path");path.setAttribute("d",d);path.setAttribute("class",`fleet-hull ${sunkIds.has(ship.id)?"sunk":""} ${ship.id===sunkId?"sink-event":""}`);svg.append(path);
-   const mid=vertical?{x:fixed*105+52.5,y:(y1+y2)/2}:{x:(x1+x2)/2,y:fixed*105+52.5};
-   const cabin=document.createElementNS(svg.namespaceURI,"path");
-   const cd=vertical?`M ${mid.x-15} ${mid.y-18} L ${mid.x+15} ${mid.y-18} L ${mid.x+19} ${mid.y+17} L ${mid.x-19} ${mid.y+17} Z`:`M ${mid.x-18} ${mid.y-19} L ${mid.x+18} ${mid.y-19} L ${mid.x+24} ${mid.y+17} L ${mid.x-24} ${mid.y+17} Z`;
-   cabin.setAttribute("d",cd);cabin.setAttribute("class","fleet-cabin");svg.append(cabin);
-   const deck=document.createElementNS(svg.namespaceURI,"path");deck.setAttribute("class","fleet-deck");deck.setAttribute("d",vertical?`M ${mid.x-9} ${mid.y+25} L ${mid.x+9} ${mid.y+25}`:`M ${mid.x-22} ${mid.y+27} L ${mid.x+22} ${mid.y+27}`);svg.append(deck);
-   if(sunkIds.has(ship.id)){const damage=document.createElementNS(svg.namespaceURI,"path");damage.setAttribute("class","fleet-damage");damage.setAttribute("d",vertical?`M ${mid.x-17} ${mid.y-4} l 12 12 m -12 0 l 12 -12`:`M ${mid.x-17} ${mid.y-4} l 12 12 m -12 0 l 12 -12`);svg.append(damage);}
+   const first=vertical?Math.min(...rows):Math.min(...cols),fixed=vertical?cols[0]:rows[0];
+   const centerX=vertical?fixed*105+52.5:(first+ship.length/2)*105;
+   const centerY=vertical?(first+ship.length/2)*105:fixed*105+52.5;
+   const halfLength=(ship.length*105-18)/2,halfBeam=27;
+   const x0=centerX-halfLength,x1=centerX+halfLength,cy=centerY;
+   const group=document.createElementNS(svg.namespaceURI,"g");
+   if(vertical)group.setAttribute("transform",`rotate(90 ${centerX} ${centerY})`);
+   group.setAttribute("class",`fleet-vessel ${sunkIds.has(ship.id)?"sunk":""} ${ship.id===sunkId?"sink-event":""}`);
+   const hull=document.createElementNS(svg.namespaceURI,"path");
+   hull.setAttribute("class","fleet-hull");
+   hull.setAttribute("d",`M ${x0+13} ${cy-halfBeam} Q ${x0} ${cy-halfBeam} ${x0} ${cy-12} L ${x0} ${cy+12} Q ${x0} ${cy+halfBeam} ${x0+13} ${cy+halfBeam} L ${x1-27} ${cy+halfBeam} Q ${x1+2} ${cy+halfBeam} ${x1} ${cy} Q ${x1+2} ${cy-halfBeam} ${x1-27} ${cy-halfBeam} Z`);
+   group.append(hull);
+   const deck=document.createElementNS(svg.namespaceURI,"path");
+   deck.setAttribute("class","fleet-deck");
+   deck.setAttribute("d",`M ${x0+15} ${cy} L ${x1-30} ${cy}`);
+   group.append(deck);
+   const cabinCenter=x0+(x1-x0)*.57;
+   const cabin=document.createElementNS(svg.namespaceURI,"rect");
+   cabin.setAttribute("x",cabinCenter-12);cabin.setAttribute("y",cy-18);
+   cabin.setAttribute("width","25");cabin.setAttribute("height","36");cabin.setAttribute("rx","5");
+   cabin.setAttribute("class","fleet-cabin");group.append(cabin);
+   const bridge=document.createElementNS(svg.namespaceURI,"rect");
+   bridge.setAttribute("x",cabinCenter-6);bridge.setAttribute("y",cy-11);
+   bridge.setAttribute("width","13");bridge.setAttribute("height","22");bridge.setAttribute("rx","2");
+   bridge.setAttribute("class","fleet-bridge");group.append(bridge);
+   const stern=document.createElementNS(svg.namespaceURI,"path");
+   stern.setAttribute("class","fleet-detail");
+   stern.setAttribute("d",`M ${x0+14} ${cy-15} L ${x0+14} ${cy+15} M ${x0+23} ${cy-20} L ${x0+23} ${cy+20}`);
+   group.append(stern);
+   if(sunkIds.has(ship.id)){
+    const damage=document.createElementNS(svg.namespaceURI,"path");
+    damage.setAttribute("class","fleet-damage");
+    damage.setAttribute("d",`M ${cabinCenter-10} ${cy-8} l 20 16 m -20 0 l 20 -16`);
+    group.append(damage);
+   }
+   svg.append(group);
   }
   root.append(svg);
  }
