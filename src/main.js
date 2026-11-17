@@ -18,7 +18,7 @@ async function attack(row,col){
  message(result.hit?(result.shipDestroyed?"Navio inimigo destruído! +150 pontos.":"Acertou um navio! +100 pontos."):result.star?"Água, mas encontrou uma estrela bônus! +25 pontos.":"Água. O computador vai responder.");
  refresh();
  if(result.finished){resolving=false;message("Vitória! Frota inimiga destruída. Bônus de 500 pontos.");finish();refresh();return;}
- await wait(520);
+ await wait(result.shipDestroyed?900:520);
  if(game!==attackedGame)return;
  const reply=computerAttack(game);
  if(reply.ok)message(reply.hit?(reply.shipDestroyed?"O computador destruiu um dos seus navios.":"O computador acertou um dos seus navios."):"O computador errou o ataque.");
