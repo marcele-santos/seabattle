@@ -32,7 +32,7 @@ test("interface adapta os tabuleiros a telas estreitas", async ({ page }) => {
   await page.goto("/");
 
   const layout = await page.locator(".game-layout").evaluate(el => getComputedStyle(el).gridTemplateColumns);
-  expect(layout.trim().split(/\\s+/)).toHaveLength(1);
+  expect(layout.trim().split(" ").filter(Boolean)).toHaveLength(1);
   const documentWidth = await page.locator("body").evaluate(el => el.scrollWidth);
   expect(documentWidth).toBeLessThanOrEqual(390);
 });
