@@ -23,7 +23,7 @@ function chooseTarget(game){
  const available=[];for(let r=0;r<BOARD_SIZE;r++)for(let c=0;c<BOARD_SIZE;c++)if(!game.playerShots.has(r*BOARD_SIZE+c))available.push([r,c]);
  if(!available.length)return null;
  if(game.difficulty!=="easy"){
-  const last=game.history.find(x=>x.side==="computer"&&x.hit);
+  const last=game.history.find(x=>x.side==="computer"&&x.hit&&!x.shipDestroyed);
   if(last){const adjacent=[[last.row-1,last.col],[last.row+1,last.col],[last.row,last.col-1],[last.row,last.col+1]].filter(([r,c])=>r>=0&&c>=0&&r<BOARD_SIZE&&c<BOARD_SIZE&&!game.playerShots.has(r*BOARD_SIZE+c));if(adjacent.length)return adjacent[Math.floor(game.random()*adjacent.length)];}
  }
  if(game.difficulty==="hard"){const parity=available.filter(([r,c])=>(r+c)%2===0);if(parity.length)return parity[Math.floor(game.random()*parity.length)];}
