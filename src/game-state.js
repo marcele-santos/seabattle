@@ -10,7 +10,7 @@ export function createGame(random = Math.random) {
     enemyShips: enemy.ships,
     enemyShots: new Set(),
     playerShots: new Set(),
-    starCells: createStarCells(random),
+    starCells: createStarCells(random, 5, enemy.board),
     stars: 0,
     nextShip: 0,
     random
