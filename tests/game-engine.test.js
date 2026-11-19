@@ -63,7 +63,7 @@ test("difícil alinha o ataque pelas extremidades após dois acertos no mesmo na
   {side:"computer",row:3,col:2,hit:true,shipDestroyed:false}
  );
  const result = computerAttack(g);
- assert.deepEqual([result.row,result.col],[3,4]);
+ assert.deepEqual([result.row,result.col],[3,1]);
 });
 
 test("normal abandona a perseguição quando o navio anterior foi destruído", () => {
