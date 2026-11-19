@@ -21,8 +21,8 @@ create table if not exists public.match_results (
   match_id uuid primary key references public.match_sessions(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
   score integer not null check (score between 500 and 10000),
-  shots integer not null check (shots between 5 and 64),
-  hits integer not null check (hits between 5 and 9),
+  shots integer not null check (shots between 9 and 64),
+  hits integer not null check (hits = 9),
   created_at timestamptz not null default now()
 );
 
@@ -46,7 +46,7 @@ create policy "profile owner updates own profile" on public.profiles
 revoke all on public.match_sessions from anon, authenticated;
 revoke all on public.match_results from anon, authenticated;
 revoke all on public.profiles from anon, authenticated;
-grant select, update on public.profiles to authenticated;
+grant select on public.profiles to authenticated;
 
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = ''

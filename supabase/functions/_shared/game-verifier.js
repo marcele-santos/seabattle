@@ -51,13 +51,14 @@ function createStars(random, board) {
 }
 
 export function verifyReplay(seed, shots) {
-  if (!Array.isArray(shots) || shots.length < 5 || shots.length > 64) throw new Error("invalid_shot_count");
+  if (!Array.isArray(shots) || shots.length < 9 || shots.length > 64) throw new Error("invalid_shot_count");
   const random = seededRandom(seed);
   const { board, ships } = createFleet(random);
   const stars = createStars(random, board);
   const seen = new Set();
   let score = 0, hits = 0, starsFound = 0;
-  for (let shotIndex = 0; shotIndex < shots.length; shotIndex++) {\n    const shot = shots[shotIndex];
+  for (let shotIndex = 0; shotIndex < shots.length; shotIndex++) {
+    const shot = shots[shotIndex];
     const { row, col } = shot || {};
     if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 || row >= SIZE || col >= SIZE) {
       throw new Error("invalid_shot_coordinate");

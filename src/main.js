@@ -1,7 +1,9 @@
 import {createGame,placePlayerShip,autoPlacePlayerFleet,startGame,playerAttack,computerAttack} from "./game-state.js";
 import {initTelegramWebApp} from "./telegram-webapp.js";
 import {render} from "./ui.js";
-import {loadStats,saveResult} from "./stats.js";\nimport {createFleetBoard,createStarCells} from "./game-engine.js";\nimport {onlineConfigured,ensureOnlineSession,createOnlineMatch,createSeededRandom,submitOnlineResult,fetchLeaderboard,updateOnlineDisplayName} from "./online.js";
+import {loadStats,saveResult} from "./stats.js";
+import {createFleetBoard,createStarCells} from "./game-engine.js";
+import {onlineConfigured,ensureOnlineSession,createOnlineMatch,createSeededRandom,submitOnlineResult,fetchLeaderboard,updateOnlineDisplayName} from "./online.js";
 initTelegramWebApp();
 let stats=loadStats(),game=createGame(Math.random,document.getElementById("difficulty").value),resultSaved=false,resolving=false,onlineMatchId=null,onlineResultSubmitted=false;
 const $=id=>document.getElementById(id);
