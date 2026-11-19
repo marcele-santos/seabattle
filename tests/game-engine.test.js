@@ -13,3 +13,65 @@ test("ataque do jogador só ocorre durante batalha",()=>{assert.equal(playerAtta
 test("dificuldade inválida usa normal e frota restante é calculada",()=>{assert.equal(createGame(Math.random,"x").difficulty,"normal");assert.equal(getRemainingShips([{length:2,hits:1},{length:1,hits:1}]),1);});
 test("ataque registra histórico, pontos e vitória",()=>{const g=createGame();g.phase="playing";g.enemyBoard[0][0]="s";g.enemyShips=[{id:"s",length:1,hits:0}];assert.equal(playerAttack(g,0,0).hit,true);assert.equal(g.score,650);assert.equal(g.history[0].side,"player");assert.equal(g.phase,"won");});
 test("computador registra ataque e não repete casas",()=>{const g=createGame(Math.random,"hard");[[0,0],[2,0],[4,0],[6,0],[7,2]].forEach(([r,c])=>placePlayerShip(g,r,c,"horizontal"));startGame(g);assert.equal(computerAttack(g).ok,true);assert.equal(g.history[0].side,"computer");assert.equal(g.playerShots.size,1);});
+
+
+function prepareAiGame(difficulty, random = () => 0) {
+ const game = createGame(() => 0.37, difficulty);
+ game.playerBoard = createBoard();
+ game.playerShips = [];
+ game.enemyShots = new Set();
+ game.playerShots = new Set();
+ game.history = [];
+ game.phase = "playing";
+ game.random = random;
+ return game;
+}
+
+test("fácil escolhe qualquer casa disponível sem perseguir acertos", () => {
+ const g = prepareAiGame("easy");
+ g.playerShots.add(0);
+ g.history.unshift({side:"computer",row:0,col:0,hit:true,shipDestroyed:false});
+ const result = computerAttack(g);
+ assert.deepEqual([result.row,result.col],[0,1]);
+});
+
+test("normal prioriza casas adjacentes ao último navio atingido", () => {
+ const g = prepareAiGame("normal");
+ g.playerBoard[3][3] = "s";
+ g.playerShips = [{id:"s",length:2,hits:1}];
+ g.playerShots.add(27);
+ g.history.unshift({side:"computer",row:3,col:3,hit:true,shipDestroyed:false});
+ const result = computerAttack(g);
+ assert.deepEqual([result.row,result.col],[2,3]);
+});
+
+test("difícil usa busca em xadrez quando ainda não encontrou navio", () => {
+ const g = prepareAiGame("hard");
+ g.playerShots.add(0);
+ const result = computerAttack(g);
+ assert.deepEqual([result.row,result.col],[0,2]);
+ assert.equal((result.row + result.col) % 2,0);
+});
+
+test("difícil alinha o ataque pelas extremidades após dois acertos no mesmo navio", () => {
+ const g = prepareAiGame("hard");
+ g.playerBoard[3][2] = "s"; g.playerBoard[3][3] = "s"; g.playerBoard[3][4] = "s";
+ g.playerShips = [{id:"s",length:3,hits:2}];
+ g.playerShots.add(26); g.playerShots.add(27);
+ g.history.unshift(
+  {side:"computer",row:3,col:3,hit:true,shipDestroyed:false},
+  {side:"computer",row:3,col:2,hit:true,shipDestroyed:false}
+ );
+ const result = computerAttack(g);
+ assert.deepEqual([result.row,result.col],[3,4]);
+});
+
+test("normal abandona a perseguição quando o navio anterior foi destruído", () => {
+ const g = prepareAiGame("normal");
+ g.playerBoard[3][3] = "s";
+ g.playerShips = [{id:"s",length:1,hits:1}];
+ g.playerShots.add(27);
+ g.history.unshift({side:"computer",row:3,col:3,hit:true,shipDestroyed:true});
+ const result = computerAttack(g);
+ assert.deepEqual([result.row,result.col],[0,0]);
+});
