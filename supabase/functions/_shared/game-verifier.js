@@ -57,7 +57,7 @@ export function verifyReplay(seed, shots) {
   const stars = createStars(random, board);
   const seen = new Set();
   let score = 0, hits = 0, starsFound = 0;
-  for (const shot of shots) {
+  for (let shotIndex = 0; shotIndex < shots.length; shotIndex++) {\n    const shot = shots[shotIndex];
     const { row, col } = shot || {};
     if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 || row >= SIZE || col >= SIZE) {
       throw new Error("invalid_shot_coordinate");

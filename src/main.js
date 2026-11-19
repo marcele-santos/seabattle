@@ -1,9 +1,9 @@
 import {createGame,placePlayerShip,autoPlacePlayerFleet,startGame,playerAttack,computerAttack} from "./game-state.js";
 import {initTelegramWebApp} from "./telegram-webapp.js";
 import {render} from "./ui.js";
-import {loadStats,saveResult} from "./stats.js";
+import {loadStats,saveResult} from "./stats.js";\nimport {createFleetBoard,createStarCells} from "./game-engine.js";\nimport {onlineConfigured,ensureOnlineSession,createOnlineMatch,createSeededRandom,submitOnlineResult,fetchLeaderboard,updateOnlineDisplayName} from "./online.js";
 initTelegramWebApp();
-let stats=loadStats(),game=createGame(Math.random,document.getElementById("difficulty").value),resultSaved=false,resolving=false;
+let stats=loadStats(),game=createGame(Math.random,document.getElementById("difficulty").value),resultSaved=false,resolving=false,onlineMatchId=null,onlineResultSubmitted=false;
 const $=id=>document.getElementById(id);
 function message(value){$("feedback").textContent=value;}
 let soundEnabled=localStorage.getItem("seabattle.sound")!=="off";
@@ -36,7 +36,24 @@ function playFeedback(result){
  }catch(error){/* Audio is an enhancement; gameplay must not depend on it. */}
 }
 function refresh(){render(game,{place,attack,isBusy:resolving},stats);}
-function finish(){if((game.phase==="won"||game.phase==="lost")&&!resultSaved){stats=saveResult(stats,game);resultSaved=true;}}
+function refreshLeaderboard(){
+ if(!onlineConfigured())return;
+ fetchLeaderboard().then(rows=>{
+  const list=$("leaderboard-list");list.replaceChildren();
+  if(!rows?.length){const li=document.createElement("li");li.textContent="Ainda não há pontuações verificadas.";list.append(li);}
+  else rows.forEach(row=>{const li=document.createElement("li");li.textContent=`#${row.position} · ${row.display_name} — ${row.score} pontos · ${row.hits}/${row.shots} acertos`;list.append(li);});
+  $("online-status").textContent="Ranking atualizado.";
+ }).catch(error=>{$("online-status").textContent=`Ranking indisponível: ${error.message}`;});
+}
+function finish(){
+ if((game.phase==="won"||game.phase==="lost")&&!resultSaved){stats=saveResult(stats,game);resultSaved=true;}
+ if(game.phase==="won"&&onlineMatchId&&!onlineResultSubmitted){
+  onlineResultSubmitted=true;
+  const shots=game.history.filter(item=>item.side==="player").reverse().map(({row,col})=>({row,col}));
+  submitOnlineResult(onlineMatchId,shots).then(()=>{ $("online-status").textContent="Vitória validada e enviada ao ranking."; refreshLeaderboard(); })
+   .catch(error=>{ onlineResultSubmitted=false; $("online-status").textContent=`Não foi possível validar a pontuação online: ${error.message}`; });
+ }
+}
 function place(row,col){const result=placePlayerShip(game,row,col,$("orientation").value);if(!result.ok)return message("Posição inválida. Escolha outra casa ou orientação.");message(result.complete?"Frota posicionada. Inicie a batalha.":"Navio posicionado.");refresh();}
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function attack(row,col){
@@ -54,7 +71,26 @@ async function attack(row,col){
  if(game.phase==="lost")message("Derrota. O computador destruiu sua frota.");
  resolving=false;finish();refresh();
 }
-$("action-button").addEventListener("click",()=>{if(game.phase==="setup"){if(!startGame(game))return;message("Batalha iniciada. Escolha uma casa no campo inimigo.");}else if(game.phase==="won"||game.phase==="lost"){game=createGame(Math.random,$("difficulty").value);resultSaved=false;message("Nova partida. Posicione sua frota.");}else return;refresh();});
+$("action-button").addEventListener("click",async()=>{
+ if(game.phase==="setup"){
+  if(game.nextShip!==5)return;
+  $("action-button").disabled=true;
+  if(onlineConfigured()){
+   try{
+    const match=await createOnlineMatch(),random=createSeededRandom(match.seed),enemy=createFleetBoard(random);
+    game.enemyBoard=enemy.board;game.enemyShips=enemy.ships;game.starCells=createStarCells(random,5,enemy.board);game.random=random;
+    onlineMatchId=match.id;onlineResultSubmitted=false;
+    $("online-status").textContent="Partida vinculada ao ranking. Boa batalha.";
+   }catch(error){onlineMatchId=null;$("online-status").textContent=`Modo offline: serviço online indisponível (${error.message}).`;}
+  }
+  if(!startGame(game)){$("action-button").disabled=false;return;}
+  message("Batalha iniciada. Escolha uma casa no campo inimigo.");
+ }else if(game.phase==="won"||game.phase==="lost"){
+  game=createGame(Math.random,$("difficulty").value);resultSaved=false;onlineMatchId=null;onlineResultSubmitted=false;
+  message("Nova partida. Posicione sua frota.");
+ }else return;
+ refresh();
+});
 $("auto-place-button").addEventListener("click",()=>{if(!autoPlacePlayerFleet(game))return;message("Frota posicionada automaticamente. Você pode iniciar a batalha.");refresh();});
 $("reset-button").addEventListener("click",()=>{game=createGame(Math.random,$("difficulty").value);resultSaved=false;resolving=false;message("Partida reiniciada. Posicione sua frota.");refresh();});
 $("orientation").addEventListener("change",()=>message(`Orientação: ${$("orientation").value==="horizontal"?"horizontal":"vertical"}.`));
