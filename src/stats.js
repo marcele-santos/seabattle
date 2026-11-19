@@ -9,7 +9,7 @@ export function loadStats(storage){
   for(const key of Object.keys(stats))if(Number.isSafeInteger(value[key])&&value[key]>=0)stats[key]=value[key];
   if(stats.wins+stats.losses>stats.games){stats.wins=Math.min(stats.wins,stats.games);stats.losses=Math.min(stats.losses,stats.games-stats.wins);}
   stats.hits=Math.min(stats.hits,stats.shots);
-  stats.bestScore=Math.min(stats.bestScore,stats.totalScore||stats.bestScore);
+  stats.bestScore=Math.min(stats.bestScore,stats.totalScore);
   return stats;
  }catch{return emptyStats();}
 }
