@@ -32,7 +32,7 @@ Controles nativos, foco visível, rótulos nas casas, mensagens anunciadas por l
 O workflow Deploy to GitHub Pages publica o site após push em main. O workflow Production monitor verifica, a cada seis horas e sob demanda, a página publicada, seus recursos estáticos e a resposta do ranking Supabase. Falhas geram uma execução com status de erro no GitHub Actions.
 
 ## Privacidade
-Consulte [PRIVACY.md](./PRIVACY.md) para saber quais dados ficam no navegador e quais são enviados ao ranking. O ranking é público; não use informações pessoais como nome de exibição.
+Consulte a [política de privacidade publicada](./privacy.html) ou sua versão em Markdown ([PRIVACY.md](./PRIVACY.md)) para saber quais dados ficam no navegador e quais são enviados ao ranking. O ranking é público; não use informações pessoais como nome de exibição.
 
 ## Telegram
 A integração permanece pausada. O cliente não autentica usuários via Telegram; funcionalidades futuras com dados confiáveis exigirão validação de initData no servidor.

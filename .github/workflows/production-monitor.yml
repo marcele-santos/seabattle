@@ -29,7 +29,10 @@ jobs:
           curl --fail --silent --show-error --retry 3 --retry-delay 5 "$SITE_URL/" -o /tmp/index.html
           grep -qi '<title>Batalha Naval</title>' /tmp/index.html
           grep -q './src/main.js' /tmp/index.html
+          grep -q './privacy.html' /tmp/index.html
           curl --fail --silent --show-error --retry 3 "$SITE_URL/src/main.js" -o /dev/null
+          curl --fail --silent --show-error --retry 3 "$SITE_URL/privacy.html" -o /tmp/privacy.html
+          grep -qi '<title>Privacidade | Batalha Naval</title>' /tmp/privacy.html
           curl --fail --silent --show-error --retry 3 "$SITE_URL/styles.css" -o /dev/null
           echo "GitHub Pages: HTML, JavaScript e CSS responderam corretamente."
 
