@@ -32,11 +32,19 @@ test("rejeita uma partida incompleta", () => {
 });
 
 test("rejeita coordenadas fora do tabuleiro", () => {
-  const shots = Array.from({ length: 5 }, (_, i) => ({ row: i === 0 ? 8 : 0, col: i }));
+  const shots = Array.from({ length: 9 }, (_, i) => ({ row: i === 0 ? 8 : 0, col: i }));
   assert.throws(() => verifyReplay(123, shots), /invalid_shot_coordinate/);
 });
 
 test("rejeita tiros duplicados", () => {
-  const shots = Array.from({ length: 5 }, () => ({ row: 0, col: 0 }));
+  const shots = Array.from({ length: 9 }, () => ({ row: 0, col: 0 }));
   assert.throws(() => verifyReplay(123, shots), /duplicate_shot/);
+});
+
+test("rejeita ataques posteriores à destruição da frota", () => {
+  const shots = generateWinningShots(987654321);
+  const used = new Set(shots.map(({ row, col }) => row * 8 + col));
+  let extra;
+  for (let key = 0; key < 64; key++) if (!used.has(key)) { extra = { row: Math.floor(key / 8), col: key % 8 }; break; }
+  assert.throws(() => verifyReplay(987654321, [...shots, extra]), /shots_after_victory/);
 });

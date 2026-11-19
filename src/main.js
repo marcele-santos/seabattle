@@ -100,3 +100,13 @@ $("difficulty").addEventListener("change",()=>{game.difficulty=$("difficulty").v
 syncSoundControl();
 $("sound-toggle").addEventListener("click",()=>{soundEnabled=!soundEnabled;localStorage.setItem("seabattle.sound",soundEnabled?"on":"off");syncSoundControl();if(soundEnabled)playFeedback({hit:false,star:true});});
 refresh();
+if(onlineConfigured()){
+ $("online-panel").hidden=false;
+ ensureOnlineSession().then(()=>{ $("online-status").textContent="Conectado ao ranking compartilhado.";refreshLeaderboard(); })
+  .catch(error=>{$("online-status").textContent=`Ranking indisponível: ${error.message}`;});
+ $("online-name-save").addEventListener("click",async()=>{
+  const name=$("online-display-name").value.trim();
+  try{await updateOnlineDisplayName(name);$("online-status").textContent="Nome atualizado.";refreshLeaderboard();}
+  catch(error){$("online-status").textContent=`Não foi possível salvar o nome: ${error.message}`;}
+ });
+}
