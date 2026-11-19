@@ -77,6 +77,7 @@ export function verifyReplay(seed, shots) {
       starsFound++;
       score += 25;
     }
+    if (ships.every(ship => ship.hits === ship.length) && shotIndex !== shots.length - 1) throw new Error("shots_after_victory");
   }
   if (!ships.every(ship => ship.hits === ship.length)) throw new Error("fleet_not_destroyed");
   score += 500;
