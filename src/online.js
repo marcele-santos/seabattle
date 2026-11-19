@@ -1,7 +1,6 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./online-config.js";
 
 const SESSION_KEY = "seabattle.supabase.session.v1";
-let pendingSession = null;
 const configured = () => Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const endpoint = path => `${SUPABASE_URL.replace(/\/$/, "")}/${path}`;
 const readSession = () => {
