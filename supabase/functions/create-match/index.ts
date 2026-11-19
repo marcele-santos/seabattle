@@ -24,6 +24,11 @@ Deno.serve(async request => {
   const bytes = new Uint32Array(1);
   crypto.getRandomValues(bytes);
   const seed = bytes[0];
+  const { data: active, error: activeError } = await admin.from("match_sessions")
+    .select("id").eq("user_id", authData.user.id)
+    .is("submitted_at", null).gt("expires_at", new Date().toISOString()).limit(1);
+  if (activeError) return Response.json({ error: "match_lookup_failed" }, { status: 500, headers: cors });
+  if (active?.length) return Response.json({ error: "active_match_exists" }, { status: 409, headers: cors });
   const { data, error } = await admin.from("match_sessions")
     .insert({ user_id: authData.user.id, seed })
     .select("id, seed").single();

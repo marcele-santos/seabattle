@@ -26,6 +26,7 @@ create table if not exists public.match_results (
   created_at timestamptz not null default now()
 );
 
+create index if not exists match_sessions_user_id_idx on public.match_sessions (user_id);
 create index if not exists match_results_ranking_idx
   on public.match_results (score desc, created_at asc);
 create index if not exists match_results_user_idx
@@ -37,7 +38,7 @@ alter table public.match_results enable row level security;
 
 drop policy if exists "profile owner reads own profile" on public.profiles;
 create policy "profile owner reads own profile" on public.profiles
-  for select to authenticated using (auth.uid() = id);
+  for select to authenticated using ((select auth.uid()) = id);
 
 drop policy if exists "profile owner updates own profile" on public.profiles;
 create policy "profile owner updates own profile" on public.profiles
