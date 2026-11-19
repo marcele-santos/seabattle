@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { verifyReplay, seededRandom } from "../supabase/functions/_shared/game-verifier.js";\nimport { createFleetBoard, createStarCells } from "../src/game-engine.js";\nimport { createSeededRandom } from "../src/online.js";
+import { verifyReplay, seededRandom } from "../supabase/functions/_shared/game-verifier.js";
+import { createFleetBoard, createStarCells } from "../src/game-engine.js";
+import { createSeededRandom } from "../src/online.js";
 
 function generateWinningShots(seed) {
   const random = seededRandom(seed), board = Array.from({ length: 8 }, () => Array(8).fill(null));
