@@ -1,4 +1,3 @@
-// Configure these two public values after creating the Supabase project.
-// The anon/publishable key is intended for browser use; never put a service-role key here.
-export const SUPABASE_URL = "";
-export const SUPABASE_ANON_KEY = "";
+// Public Supabase project configuration. Never place a service-role key here.
+export const SUPABASE_URL = "https://fgvceipvuugshkpirphv.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable_8DaoiKpPd3uldLVPiVsd9A_xp7prc7Y";
