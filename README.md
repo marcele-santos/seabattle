@@ -28,12 +28,14 @@ npm run test:e2e
 ## Acessibilidade e responsividade
 Controles nativos, foco visível, rótulos nas casas, mensagens anunciadas por leitores de tela e layout adaptável a telas estreitas.
 
-## Publicação web
-O workflow Deploy to GitHub Pages publica o site após push em main. Em Settings → Pages, selecione GitHub Actions como fonte de publicação. A URL final aparecerá no workflow e nas configurações do Pages após um deployment concluído. Repositórios privados podem exigir plano compatível com GitHub Pages.
+## Publicação e monitoramento
+O workflow Deploy to GitHub Pages publica o site após push em main. O workflow Production monitor verifica, a cada seis horas e sob demanda, a página publicada, seus recursos estáticos e a resposta do ranking Supabase. Falhas geram uma execução com status de erro no GitHub Actions.
+
+## Privacidade
+Consulte [PRIVACY.md](./PRIVACY.md) para saber quais dados ficam no navegador e quais são enviados ao ranking. O ranking é público; não use informações pessoais como nome de exibição.
 
 ## Telegram
-A compatibilidade inicial permanece sem alterações nesta etapa. O cliente não autentica usuários; funcionalidades futuras com dados confiáveis exigirão validação de initData no servidor.
+A integração permanece pausada. O cliente não autentica usuários via Telegram; funcionalidades futuras com dados confiáveis exigirão validação de initData no servidor.
 
 ## Ranking online
-
-A implementação do backend, as migrações SQL e as Edge Functions estão em `supabase/`. Para ativar o ranking, siga [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) e configure `src/online-config.js`. Sem configuração, o jogo continua funcionando offline.
+A implementação do backend, as migrações SQL e as Edge Functions estão em `supabase/`. Para configurar outro ambiente, siga [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) e configure `src/online-config.js`. Sem configuração, o jogo continua funcionando offline.
