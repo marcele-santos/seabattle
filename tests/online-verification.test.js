@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { verifyReplay, seededRandom } from "../supabase/functions/_shared/game-verifier.js";
+import { verifyReplay, seededRandom } from "../supabase/functions/_shared/game-verifier.js";\nimport { createFleetBoard, createStarCells } from "../src/game-engine.js";\nimport { createSeededRandom } from "../src/online.js";
 
 function generateWinningShots(seed) {
   const random = seededRandom(seed), board = Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -47,4 +47,19 @@ test("rejeita ataques posteriores à destruição da frota", () => {
   let extra;
   for (let key = 0; key < 64; key++) if (!used.has(key)) { extra = { row: Math.floor(key / 8), col: key % 8 }; break; }
   assert.throws(() => verifyReplay(987654321, [...shots, extra]), /shots_after_victory/);
+});
+
+test("geração de frota e estrelas no navegador coincide com a validação do servidor", () => {
+  const seed = 246813579, random = createSeededRandom(seed);
+  const { board } = createFleetBoard(random);
+  const stars = createStarCells(random, 5, board);
+  const firstStar = [...stars][0];
+  const shots = [
+    { row: Math.floor(firstStar / 8), col: firstStar % 8 },
+    ...board.flatMap((line, row) => line.flatMap((ship, col) => ship === null ? [] : [{ row, col }]))
+  ];
+  const result = verifyReplay(seed, shots);
+  assert.equal(result.hits, 9);
+  assert.equal(result.stars, 1);
+  assert.equal(result.score, 1675);
 });

@@ -23,7 +23,7 @@ npm run test:e2e
 - Fácil: ataques aleatórios. Normal: prioriza casas adjacentes após acerto. Difícil: usa adjacências e padrão de busca em casas alternadas.
 - Pontuação: 100 por acerto, +50 por navio destruído, 25 por estrela e 500 pela vitória.
 - Histórico de ataques, navios restantes e revanche.
-- Estatísticas, precisão e recorde persistidos no armazenamento local do navegador. Não há sincronização entre dispositivos.
+- Estatísticas, precisão e recorde da partida permanecem no armazenamento local do navegador. O ranking online compartilhado fica disponível após configurar o Supabase; a identidade anônima é vinculada ao navegador.
 
 ## Acessibilidade e responsividade
 Controles nativos, foco visível, rótulos nas casas, mensagens anunciadas por leitores de tela e layout adaptável a telas estreitas.
@@ -33,3 +33,7 @@ O workflow Deploy to GitHub Pages publica o site após push em main. Em Settings
 
 ## Telegram
 A compatibilidade inicial permanece sem alterações nesta etapa. O cliente não autentica usuários; funcionalidades futuras com dados confiáveis exigirão validação de initData no servidor.
+
+## Ranking online
+
+A implementação do backend, as migrações SQL e as Edge Functions estão em `supabase/`. Para ativar o ranking, siga [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) e configure `src/online-config.js`. Sem configuração, o jogo continua funcionando offline.
