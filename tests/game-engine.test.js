@@ -16,7 +16,7 @@ test("computador registra ataque e não repete casas",()=>{const g=createGame(Ma
 
 
 function prepareAiGame(difficulty, random = () => 0) {
- const game = createGame(() => 0.37, difficulty);
+ const game = createGame(Math.random, difficulty);
  game.playerBoard = createBoard();
  game.playerShips = [];
  game.enemyShots = new Set();
