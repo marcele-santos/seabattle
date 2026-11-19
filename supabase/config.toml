@@ -1,5 +1,8 @@
 project_id = "seabattle"
 
+# The functions validate bearer tokens with auth.getUser() before privileged work.
+# Keep gateway JWT verification disabled for compatibility with the project's
+# current anonymous-auth token configuration; never trust the apikey alone.
 [functions.create-match]
 verify_jwt = false
 
