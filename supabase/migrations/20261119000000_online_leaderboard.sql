@@ -40,10 +40,6 @@ drop policy if exists "profile owner reads own profile" on public.profiles;
 create policy "profile owner reads own profile" on public.profiles
   for select to authenticated using ((select auth.uid()) = id);
 
-drop policy if exists "profile owner updates own profile" on public.profiles;
-create policy "profile owner updates own profile" on public.profiles
-  for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
-
 revoke all on public.match_sessions from anon, authenticated;
 revoke all on public.match_results from anon, authenticated;
 revoke all on public.profiles from anon, authenticated;
@@ -80,7 +76,7 @@ end;
 $$;
 
 create or replace function public.get_leaderboard()
-returns table (position bigint, display_name text, score integer, shots integer, hits integer, achieved_at timestamptz)
+returns table ("position" bigint, display_name text, score integer, shots integer, hits integer, achieved_at timestamptz)
 language sql stable security definer set search_path = ''
 as $$
   with best_per_player as (
@@ -90,10 +86,10 @@ as $$
     join public.profiles p on p.id = r.user_id
     order by r.user_id, r.score desc, r.created_at asc
   )
-  select row_number() over (order by b.score desc, b.achieved_at asc),
+  select row_number() over (order by b.score desc, b.created_at asc),
          b.display_name, b.score, b.shots, b.hits, b.created_at
   from best_per_player b
-  order by b.score desc, b.achieved_at asc
+  order by b.score desc, b.created_at asc
   limit 50;
 $$;
 
@@ -104,7 +100,7 @@ returns void language plpgsql security definer set search_path = ''
 as $$
 declare match_row public.match_sessions%rowtype;
 begin
-  if auth.role() <> 'service_role' then raise exception 'service_role_required'; end if;
+  if coalesce(auth.jwt()->>'role', '') <> 'service_role' then raise exception 'service_role_required'; end if;
   select * into match_row from public.match_sessions
     where id = requested_match_id for update;
   if not found then raise exception 'match_not_found'; end if;
@@ -116,7 +112,10 @@ begin
 end;
 $$;
 
+revoke all on function public.handle_new_user() from public, anon, authenticated;
 revoke all on function public.finalize_verified_match(uuid, integer, integer, integer) from public, anon, authenticated;
+revoke all on function public.get_leaderboard() from public, anon, authenticated;
+revoke all on function public.set_display_name(text) from public, anon, authenticated;
 grant execute on function public.finalize_verified_match(uuid, integer, integer, integer) to service_role;
 grant execute on function public.get_leaderboard() to anon, authenticated;
 grant execute on function public.set_display_name(text) to authenticated;
