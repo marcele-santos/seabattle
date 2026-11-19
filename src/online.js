@@ -1,6 +1,7 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./online-config.js";
 
-const SESSION_KEY = "seabattle.supabase.session.v1";\nlet pendingSession = null;
+const SESSION_KEY = "seabattle.supabase.session.v1";
+let pendingSession = null;
 const configured = () => Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const endpoint = path => `${SUPABASE_URL.replace(/\/$/, "")}/${path}`;
 const readSession = () => {
@@ -27,23 +28,28 @@ async function request(path, options = {}, session = null) {
 
 export function onlineConfigured() { return configured(); }
 
+let pendingSession = null;
+
 export async function ensureOnlineSession() {
   if (!configured()) return null;
-  let session = readSession();
-  if (session?.access_token && session.expires_at > Date.now() / 1000 + 60) return session;
-  if (session?.refresh_token) {
-    try {
-      const refreshed = await request("auth/v1/token?grant_type=refresh_token", {
-        method: "POST", body: JSON.stringify({ refresh_token: session.refresh_token })
-      });
-      return saveSession({ ...refreshed, expires_at: Date.now() / 1000 + (refreshed.expires_in || 3600) });
-    } catch { session = null; }
-  }
-  const created = await request("auth/v1/signup", { method: "POST", body: JSON.stringify({ data: {} }) });
-  if (!created.access_token) throw new Error("Autenticação anônima indisponível. Ative-a no Supabase Auth.");
-  return saveSession({ ...created, expires_at: Date.now() / 1000 + (created.expires_in || 3600) });
+  if (pendingSession) return pendingSession;
+  pendingSession = (async () => {
+    let session = readSession();
+    if (session?.access_token && session.expires_at > Date.now() / 1000 + 60) return session;
+    if (session?.refresh_token) {
+      try {
+        const refreshed = await request("auth/v1/token?grant_type=refresh_token", {
+          method: "POST", body: JSON.stringify({ refresh_token: session.refresh_token })
+        });
+        return saveSession({ ...refreshed, expires_at: Date.now() / 1000 + (refreshed.expires_in || 3600) });
+      } catch { session = null; }
+    }
+    const created = await request("auth/v1/signup", { method: "POST", body: JSON.stringify({ data: {} }) });
+    if (!created.access_token) throw new Error("Autenticação anônima indisponível. Ative-a no Supabase Auth.");
+    return saveSession({ ...created, expires_at: Date.now() / 1000 + (created.expires_in || 3600) });
+  })();
+  try { return await pendingSession; } finally { pendingSession = null; }
 }
-
 export function createSeededRandom(seed) {
   let state = Number(seed) >>> 0;
   return function random() {
