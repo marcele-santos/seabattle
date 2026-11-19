@@ -75,3 +75,49 @@ test("normal abandona a perseguição quando o navio anterior foi destruído", (
  const result = computerAttack(g);
  assert.deepEqual([result.row,result.col],[0,0]);
 });
+
+
+test("pontuação premia acerto parcial e concede bônus de destruição uma única vez", () => {
+ const g = createGame();
+ g.phase = "playing";
+ g.enemyBoard = createBoard();
+ g.enemyBoard[2][2] = "target";
+ g.enemyBoard[2][3] = "target";
+ g.enemyShips = [{id:"target",length:2,hits:0}];
+ g.starCells = new Set();
+ assert.equal(playerAttack(g,2,2).hit,true);
+ assert.equal(g.score,100);
+ assert.equal(playerAttack(g,2,3).shipDestroyed,true);
+ assert.equal(g.score,750);
+ assert.equal(g.phase,"won");
+ assert.equal(playerAttack(g,2,3).reason,"phase");
+ assert.equal(g.score,750);
+});
+
+test("estrela só concede 25 pontos e incrementa contador sem contar como acerto", () => {
+ const g = createGame();
+ g.phase = "playing";
+ g.enemyBoard = createBoard();
+ g.enemyShips = [{id:"remaining",length:1,hits:0}];
+ g.starCells = new Set([0]);
+ const result = playerAttack(g,0,0);
+ assert.equal(result.hit,false);
+ assert.equal(result.star,true);
+ assert.equal(g.stars,1);
+ assert.equal(g.score,25);
+ assert.equal(g.history[0].star,true);
+});
+
+test("ataques inválidos ou repetidos não alteram pontuação nem estrelas", () => {
+ const g = createGame();
+ g.phase = "playing";
+ g.enemyBoard = createBoard();
+ g.enemyShips = [{id:"remaining",length:1,hits:0}];
+ g.starCells = new Set([0]);
+ assert.equal(playerAttack(g,-1,0).ok,false);
+ assert.equal(g.score,0);
+ assert.equal(playerAttack(g,0,0).star,true);
+ assert.equal(playerAttack(g,0,0).reason,"repeat");
+ assert.equal(g.score,25);
+ assert.equal(g.stars,1);
+});
